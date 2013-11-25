@@ -1,0 +1,31 @@
+<div class="commentList">
+    <!--<p>Comments</p>-->
+    <!--Search: <input ng-model="query">-->
+    <!--<select ng-model="orderProp">-->
+        <!--<option value="date">Date</option>-->
+        <!--<option value="-rating">Rating</option>-->
+    <!--</select>-->
+    <ul class="comments">
+        <li ng-repeat="comment in comments | filter:query | orderBy:orderProp">
+            <div class="comment">
+                <div class="rating">
+                    Rating
+                    <!--<a onclick="">+</a>-->
+                    {{comment.rating}}
+                    <!--<a onclick="">-</a>-->
+                </div>
+                <div class="text">
+                    {{comment.comment}}
+                </div>
+                <div class="author">
+                    by {{comment.username}} on {{comment.date}}
+                </div>
+            </div>
+        </li>
+
+    </ul>
+</div>
+
+<div class="addComment">
+
+</div>

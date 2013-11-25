@@ -1,0 +1,37 @@
+[
+    {
+        "username": "Emma",
+        "comment": "I absolutely loved this play. So many memories and so many tears I experienced. Really didn't know the story of the Four Seasons or Frankie Valli. I would recommend this as maybe a little higher than PG 13. I was not expecting the \"f\" bomb quite as much but then it was about New Jersey.",
+        "coords": "323232323234",
+        "rating":3,
+        "_id":1,
+        "date": "02/11/2013"
+    },
+
+    {
+        "username": "Stan",
+        "comment": "Dance on the beach. Run in the surf. Make a splash in tropically sunny Corpus Christi, Texas! There are miles of beaches for fishing, boating and floating. Attractions are waiting to be explored and our conveniently located hotels and condos are just minutes from everything including art festivals and sporting events. Corpus Christi is an attractive location for the whole family!",
+        "coords": "323232323234",
+        "rating":4,
+        "date": "11/05/2013",
+        "_id":2
+    },
+
+    {
+        "username": "Ivan",
+        "comment": "Our family of four went to see the show last night. What a delight! The music, the cast, the atmosphere! We were enjoying it so much! This music is our youth, but our sons enjoyed it as much as we have. And that, my friends, is a definition of classic!",
+        "coords": "323232323234",
+        "rating":5,
+        "date": "02/09/2012",
+        "_id":3
+    },
+
+    {
+        "username": "Alex",
+        "comment": "When I went to NYC with friends in october one of my girlfriends wantred to see a show so we choose jersey boys,I had never been to a show on broadway before and was very surprised by how much I enjoyed,show is excellent,great atmosphere and brillaint performances from all the cast.",
+        "coords": "323232323234",
+        "rating":0,
+        "date": "11/11/2013",
+        "_id":4
+    }
+]

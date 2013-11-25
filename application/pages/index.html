@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="travel-comments">
 <head>
+    <link rel="stylesheet" href="../stylesheets/comments.css">
     <title>Hello World</title>
 
 
@@ -57,7 +58,6 @@
 <div ng-view>
 
 </div>
-<p>Comments</p>
 
 <footer>
 
@@ -65,10 +65,12 @@
 
 
 <script src="../javascripts/lib/angular.js"></script>
+<script src="../javascripts/lib/angular/angular-route.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 <script src="../javascripts/lib/angular-google-maps.js"></script>
 
 <script src="../javascripts/controllers/map-front.js"></script>
+<script src="../javascripts/controllers/comments-front.js"></script>
 <script src="../javascripts/services/map-back.js"></script>
 <script src="../javascripts/application.js"></script>
 

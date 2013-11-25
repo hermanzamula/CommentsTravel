@@ -1,0 +1,28 @@
+
+.comments {
+    list-style-type: none;
+    /*background: gainsboro;*/
+}
+
+.comment {
+    float: left;
+    display: block;
+    line-height: 1;
+    padding: 4px 4px 3px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.rating {
+    display: block;
+    float: left;
+    width: 100px;
+    height: 100%;
+    font-weight: bold;
+}
+
+.author {
+    color: #808080;
+    text-align: right;
+}

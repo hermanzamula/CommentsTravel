@@ -11,31 +11,27 @@ var schema = new Schema({
         required: true,
         unique: true
     },
-    country: {
-        type: String,
-        required: false
-    },
-    city: {
-        type: String,
-        required: false
-    },
-    place: {
+    coords: {
         type: String,
         required: true
+    },
+    date:{
+        type: Date,
+        required:true
     },
     rating: {
         type: Number,
         required: true,
         unique: false
     },
-    _id:{
-        type:String,
-        required:true,
-        unique:true
+    _id: {
+        type: String,
+        required: true,
+        unique: true
     }
 });
 
-schema.methods.increaseRating = function (){
+schema.methods.increaseRating = function () {
 //    this.rating = comment.rating + 1;
 //    Comment.find
 //    this.save();
