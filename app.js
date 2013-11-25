@@ -1,11 +1,11 @@
 
 var express = require('express');
-var routes = require('routes');
 var http = require('http');
 var path = require('path');
 var Comment = require('./model/comment');
-var config = require('config');
-var log = require('lib/logs');
+var config = require('./config');
+var log = require('./lib/logs');
+var routes = require('./routes/index');
 var app = express();
 
 // all environments
