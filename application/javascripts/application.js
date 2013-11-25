@@ -1,5 +1,4 @@
-angular.module("TravelComments", function(){
+angular.module("travel-comments",["google-maps", "map-front"]);
 
-}).controller("MainController", function(){
 
-});
+
