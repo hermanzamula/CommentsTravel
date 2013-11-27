@@ -2,7 +2,7 @@
 var express = require('express');
 var http = require('http');
 var path = require('path');
-var Comment = require('./model/comment');
+//var Comment = require('./model/comment');
 var config = require('./config');
 var log = require('./lib/logs');
 var routes = require('./routes/index');
@@ -26,6 +26,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
+app.get('/testData.json', routes.testData);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

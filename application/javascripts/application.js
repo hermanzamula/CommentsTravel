@@ -1,4 +1,8 @@
-var commentsApp = angular.module("travel-comments",["google-maps", "map-front", 'ngRoute', 'comments-front']);
+var commentsApp = angular.module("travel-comments",[
+    "google-maps",
+    "map-front",
+    'ngRoute',
+    'comments-front']);
 
 commentsApp.config(['$routeProvider',
     function($routeProvider){

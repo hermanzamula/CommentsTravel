@@ -1,4 +1,6 @@
 angular.module("comments-back", ["ngResource"])
-    .factory("Comments", function($resource) {
-         return $resource("../comments")
-    })
+    .factory("Comment", function($resource) {
+        return $resource('/api/findAll',{},{
+            query:{method: 'GET', isArray: true}}
+        );
+    });
