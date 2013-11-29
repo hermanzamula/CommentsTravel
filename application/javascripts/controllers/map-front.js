@@ -33,52 +33,60 @@ angular.module("map-front", ['map-back'])
 
 
         angular.extend($scope, {
-
-            position: {
-                coords: {
-                    latitude: $scope.location.lat,
-                    longitude: $scope.location.lng
-                }
-            },
-
-            /** the initial center of the map */
-            centerProperty: {
-                latitude: 50.45,
-                longitude: 30.52
-            },
-
-            /** the initial zoom level of the map */
-            zoomProperty: 5,
-
-            /** list of markers to put in the map */
-            markersProperty: [
-                {
-                    latitude: 50.45,
-                    longitude: 30.52
-                },
-                {
+            map: {
+                center: {
                     latitude: $scope.location.lat,
                     longitude: $scope.location.lng
                 },
-                {
-                    latitude: 51,
-                    longitude: 38
+                zoom: 5,
+                dragging: false,
+                bounds: {},
+                options: {
+                    streetViewControl: false,
+                    panControl: false
                 },
-                {
-                    latitude: 52,
-                    longitude: 26
-                }
-            ],
+                latitude: 15,
+                longitude: 15,
+                markers: [
+                    {
+                        latitude: 50.45,
+                        longitude: 30.52
+                    },
+                    {
+                        latitude: $scope.location.lat,
+                        longitude: $scope.location.lng
+                    },
+                    {
+                        latitude: 51,
+                        longitude: 38
+                    },
+                    {
+                        latitude: 52,
+                        longitude: 26
+                    }
+                ],
 
-            // These 2 properties will be set when clicking on the map
-            clickedLatitudeProperty: null,
-            clickedLongitudeProperty: null,
+                events: {
+                    click: function (mapModel, eventName, originalEventArgs) {
+                        // 'this' is the directive's scope
+                        $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
 
-            eventsProperty: {
-                click: function (mapModel, eventName, originalEventArgs) {
-                    // 'this' is the directive's scope
-                    $log.log("user defined event on map directive with scope", this);
-                    $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
+                        var e = originalEventArgs[0];
+
+                        if (!$scope.map.clickedMarker) {
+                            $scope.map.clickedMarker = {
+                                title: 'You clicked here',
+                                latitude: e.latLng.lat(),
+                                longitude: e.latLng.lng()
+                            };
+                        }
+                        else {
+                            $scope.map.clickedMarker.latitude = e.latLng.lat();
+                            $scope.map.clickedMarker.longitude = e.latLng.lng();
+                        }
+
+                        $scope.$apply();
+                    }
                 }
             }
         });

@@ -63,10 +63,22 @@
 </header>
 <div id="map-canvas" ></div>
 <div ng-controller="map-controller">
-    <div class="google-map" center="position.coords" draggable="true" zoom="zoomProperty"
-         markers="markersProperty" mark-click="true" style="width: 100%; height:300px; display:block">
+    <div class="google-map"
+         markers="map.markers"
+         mark-click="true"
+         center="map.center"
+         zoom="map.zoom"
+         draggable="true"
+         dragging="map.dragging"
+         bounds="map.bounds"
+         events="map.events"
+         latitude="map.latitude"
+         longitude="map.longitude"
+
+         style="width: 100%; height:300px; display:block">
          </div>
     <div>{{locationData.results[0].geometry.location}}</div>
+    <div>lat = {{map.latitude}}; lng = {{map.longitude}}</div>
 </div>
 
 <div ng-view>
