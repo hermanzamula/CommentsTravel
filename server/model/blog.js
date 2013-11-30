@@ -24,15 +24,14 @@ var Comment = new Schema({
         type: String,
         required: true,
         unique: false
-    },
-    _id: {
-        type: String,
-        required: true,
-        unique: true
     }
 });
 
 var Blog = new Schema({
+    "_id": {
+        type: Number,
+        unique: true
+    },
     username: {
         type: String,
         required: true
@@ -50,9 +49,11 @@ var Blog = new Schema({
         unique: false
     },
     coords: {
-        type: String,
+        type: [Number],
         required: true
-    }
+    },
+    tags: [String],
+    places: [Number]
 });
 
 Blog.methods.increaseRating = function() {

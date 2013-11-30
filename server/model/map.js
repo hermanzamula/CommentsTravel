@@ -13,7 +13,10 @@ var Place = new Schema({
     description: {
         type: String
     },
-    urlInfo: {
+    location: {
+        type: [Number]
+    },
+    infoUrl: {
         type: String
     }
 });
