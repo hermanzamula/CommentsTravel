@@ -11,7 +11,10 @@
         "mongoose": "3.8.1",
         "nconf": "0.6.8",
         "winston": "0.7.2",
-        "jade": "*"
+        //Test
+        "should": "*",
+        "mocha": "*",
+        "supertest": "*"
     }
 
 }
