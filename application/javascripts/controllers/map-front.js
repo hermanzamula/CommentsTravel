@@ -1,5 +1,6 @@
-angular.module("map-front", ['map-back'])
-    .controller("map-controller", ['$scope', '$http', '$timeout', '$log', 'Location', function ($scope, $http, $timeout, $log, Location) {
+angular.module("map-front", ['map-back', 'coordsForNewComment'])
+    .controller("map-controller", ['$scope', '$http', '$timeout', '$log', 'Location', 'Coordinates',
+        function ($scope, $http, $timeout, $log, Location, Coordinates) {
 
 
         // Enable the new Google Maps visuals until it gets enabled by default.
@@ -74,6 +75,7 @@ angular.module("map-front", ['map-back'])
                         var e = originalEventArgs[0];
 
                         if (!$scope.map.clickedMarker) {
+                            Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
                             $scope.map.clickedMarker = {
                                 title: 'You clicked here',
                                 latitude: e.latLng.lat(),
@@ -90,5 +92,8 @@ angular.module("map-front", ['map-back'])
                 }
             }
         });
+            $scope.$watch("map", function (oldVal, newVal) {
+                Coordinates.setCoords(newVal.latitude, newVal.longitude);
+            });
     }]
     );

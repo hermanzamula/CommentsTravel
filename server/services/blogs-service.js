@@ -3,7 +3,11 @@ var Blog = require(global.rootPath("server/model/blog")).Blog;
 var BlogService = {};
 
 BlogService.saveBlog = function(blog) {
-    Blog.create(blog);
+    var newBlog = new Blog(blog);
+    newBlog.save(function(err, dov){
+        if(err) console.log(err);
+
+    });
 };
 
 BlogService.addComment = function(blog, comment) {

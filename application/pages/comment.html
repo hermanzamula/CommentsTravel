@@ -20,20 +20,21 @@
             -
         </button>
 
-        <div class="comment">{{comment.comment}}</div>
+        <div class="comment">{{comment.body}}</div>
         <div class="info">
             by <span class="username">{{comment.username}}</span> on <span class="date">{{comment.date | date:"MM/dd/yyyy"}}</span>
+            Coordinates: {{comment.coords[0].lat}} - {{comment.coords[0].lng}}
         </div>
     </li>
 </ul>
 
 <div class="commentForm">
-    <form name="newComment" novalidate class="newComment" ng-submit="addComment()">
+    <form name="newCommentForm" novalidate class="newComment" ng-submit="addComment()">
         <h3>Rating {{newComment.rating}}</h3>
-        <textarea ng-model="newComment.comment" class="commentArea" required></textarea>
+        <textarea ng-model="newComment.body" class="commentArea" required></textarea>
         <label>Username:</label>
         <input type="text" ng-model="newComment.username" name="comment" required/>
-        <button type="submit" class="addCommentBtn" ng-disabled="newComment.$invalid">Add comment</button>
+        <button type="submit" class="addCommentBtn" ng-disabled="newCommentForm.$invalid">Add comment</button>
     </form>
 </div>
 

@@ -7,7 +7,6 @@ global.rootPath = root;
 var express = require('express');
 var http = require('http');
 var path = require('path');
-//var Comment = require('./model/comment');
 var config = require(root('config'));
 var log = require(root('lib/logs'));
 var index = require(root('server/routes/index'));

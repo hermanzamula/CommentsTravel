@@ -1,7 +1,7 @@
 var blogService = require(global.rootPath('server/services/blogs-service')).BlogService;
 
 exports.save = function(req, res) {
-    var blog = request.body;
+    var blog = req.body;
     blogService.saveBlog(blog);
     res.status(200).send();
 };
