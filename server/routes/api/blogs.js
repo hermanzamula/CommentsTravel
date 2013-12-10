@@ -24,3 +24,9 @@ exports.getAll = function(req, resp) {
         resp.json(blogs);
     })
 };
+
+exports.getAllMaped = function(req, resp){
+    blogService.getMapedBlogs(function(blogAreas){
+        resp.json(blogAreas);
+    })
+};

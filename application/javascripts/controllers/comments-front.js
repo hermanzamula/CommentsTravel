@@ -1,10 +1,17 @@
 angular.module('comments-front', ['comments-back', 'coordsForNewComment'])
-    .controller('commentController', ['$scope', 'CommentGet', 'CommentAdd', 'Coordinates',
-        function ($scope, CommentGet, CommentAdd, Coordinates) {
+    .controller('commentController', ['$scope', 'CommentGet', 'CommentMapped', 'CommentAdd', 'Coordinates',
+        function ($scope, CommentGet,CommentMapped, CommentAdd, Coordinates) {
         $scope.comments = [];
+        $scope.commentsMapped = [];
+
         CommentGet.query(function (data) {
             $scope.comments = data;
         });
+
+        CommentMapped.query(function(data){
+            $scope.commentsMapped = data;
+        });
+
         $scope.orderProp = '-date';
         $scope.newComment = {rating: 0};
         $scope.setOrderProp = function (value) {

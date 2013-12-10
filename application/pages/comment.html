@@ -1,5 +1,6 @@
 <div class="searchBar">
-<h2>Comments</h2>
+    <h2>Comments</h2>
+
     <form>
         <label>Search:</label> <input ng-model="query">
         <select ng-model="orderProp">
@@ -8,7 +9,12 @@
         </select>
     </form>
 </div>
-
+<ul class="areaList">
+    <li ng-repeat="area in commentsMapped ">
+        <strong class="title">{{area.coords.lat}} - {{area.coords.lng}}</strong>
+        <button type="submit" class="addCommentBtn">Has {{area.blogs.length}}</button>
+    </li>
+</ul>
 <ul class="commentsList">
     <li ng-repeat="comment in comments | filter:query | orderBy:orderProp">
         <strong class="title">Rating</strong>

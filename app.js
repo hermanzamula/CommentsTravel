@@ -42,6 +42,7 @@ var apiPath = "/api";
 //--------------------------------- Blog routes -----------------------------------------------------------------------
 app.get(apiPath + "/blogs/:place", blogs.getByPlace);
 app.get(apiPath + "/blogs", blogs.getAll);
+app.get(apiPath + "/blogsMapped", blogs.getAllMaped);
 app.post(apiPath + "/blogs", blogs.save);
 
 //--------------------------------- Comments routes -------------------------------------------------------------------
