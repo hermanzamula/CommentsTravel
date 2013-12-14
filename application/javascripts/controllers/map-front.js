@@ -31,9 +31,6 @@ angular.module("map-front", ['map-back', 'coordsForNewComment'])
                     $scope.position.coords.longitude = $scope.location.lng;
                 }
             });
-            // Create autocomplete
-            var searchInput = document.getElementById("search-input");
-            var autocomplete = new google.maps.places.Autocomplete(searchInput);
 
             angular.extend($scope, {
                 map: {

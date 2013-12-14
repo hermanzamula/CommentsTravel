@@ -4311,7 +4311,40 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 
   // ... then deal with the label:
   this.label.setMap(theMap);
-};;angular.module("google-maps")
+};
+
+
+// Creates Autocomplete
+function Autocomplete (map) {
+    this.place;
+    this.input;
+    this.autocomplete;
+
+    this.createInput(map);
+
+    this.autocomplete = new google.maps.places.Autocomplete(this.input);
+    this.autocomplete.bindTo('bounds', map);
+
+    google.maps.event.addListener(this.autocomplete, 'place_changed', function () {
+        this.place = this.autocomplete.getPlace();
+
+    });
+}
+
+Autocomplete.prototype.createInput = function (map) {
+    this.input = document.createElement("input");
+    this.input.type = "text";
+    this.input.className = "angular-google-map-autocomplete";
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.input);
+};
+
+Autocomplete.prototype.getPlace = function () {
+    return this.place;
+};
+
+
+
+angular.module("google-maps")
     .factory('array-sync',['add-events',function(mapEvents){
 
         return function LatLngArraySync(mapArray,scope,pathEval){
@@ -4502,7 +4535,8 @@ angular.module('google-maps')
                 windows: '=windows',        // optional
                 options: '=options',        // optional
                 events: '=events',          // optional
-                bounds: '=bounds'
+                bounds: '=bounds',
+                autocomplete: '=autocomplete'
             },
 
             /**
@@ -4567,6 +4601,10 @@ angular.module('google-maps')
                     zoom: scope.zoom,
                     bounds: scope.bounds
                 }));
+
+                if (attrs.autocomplete) {
+                    var autocomplete = new Autocomplete(_m);
+                }
 
                 var dragging = false;
 
@@ -4642,6 +4680,8 @@ angular.module('google-maps')
                       });
                     });
                 });
+
+
 
                 if (angular.isDefined(scope.events) &&
                     scope.events !== null &&
