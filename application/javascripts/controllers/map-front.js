@@ -50,19 +50,27 @@ angular.module("map-front", ['map-back', 'coordsForNewComment'])
                     markers: [
                         {
                             latitude: 50.45,
-                            longitude: 30.52
+                            longitude: 30.52,
+                            showWindow: false,
+                            title: 'Marker 1'
                         },
                         {
                             latitude: $scope.location.lat,
-                            longitude: $scope.location.lng
+                            longitude: $scope.location.lng,
+                            showWindow: false,
+                            title: 'Marker 2'
                         },
                         {
                             latitude: 51,
-                            longitude: 38
+                            longitude: 38,
+                            showWindow: false,
+                            title: 'Marker 3'
                         },
                         {
                             latitude: 52,
-                            longitude: 26
+                            longitude: 26,
+                            showWindow: false,
+                            title: 'Marker 4'
                         }
                     ],
 
