@@ -4316,18 +4316,22 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 
 // Creates Autocomplete
 function Autocomplete (map) {
-    this.place;
-    this.input;
-    this.autocomplete;
-
     this.createInput(map);
 
     this.autocomplete = new google.maps.places.Autocomplete(this.input);
-    this.autocomplete.bindTo('bounds', map);
+    var autocomplete = this.autocomplete;
+    autocomplete.bindTo('bounds', map);
 
-    google.maps.event.addListener(this.autocomplete, 'place_changed', function () {
-        this.place = this.autocomplete.getPlace();
+    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        this.place = autocomplete.getPlace();
+        var place = this.place;
 
+        if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+        } else {
+            map.setCenter(place.geometry.location);
+            map.setZoom(17);  // Why 17? Because it looks good.
+        }
     });
 }
 
