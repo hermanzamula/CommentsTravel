@@ -7,11 +7,8 @@ var commentsApp = angular.module("travel-comments",[
 commentsApp.config(['$routeProvider',
     function($routeProvider){
         $routeProvider.
-            when('/comment', {
+            when('/comment/:lat/:lng', {
                 templateUrl: 'pages/comment.html',
                 controller: 'commentController'
-            }).
-            otherwise({
-                redirectTo: '/comment'
-            });
+            })
     }]);

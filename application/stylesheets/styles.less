@@ -19,61 +19,120 @@ time, mark, audio, video {
   font: inherit;
   vertical-align: baseline;
 }
+
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
   display: block;
 }
-html{overflow-y:scroll}
-ol, ul {list-style: none}
-blockquote, q {quotes: none}
+
+html {
+  overflow-y: scroll
+}
+
+ol, ul {
+  list-style: none
+}
+
+blockquote, q {
+  quotes: none
+}
+
 blockquote:before, blockquote:after,
 q:before, q:after {
   content: '';
   content: none;
 }
+
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
-input, textarea, select {
-  font:100% arial,sans-serif;
-  vertical-align:middle;
-  outline:none;
-}
-img {border:0;vertical-align:bottom}
-fieldset {border:0}
 
+input, textarea, select {
+  font: 100% arial, sans-serif;
+  vertical-align: middle;
+  outline: none;
+}
+
+img {
+  border: 0;
+  vertical-align: bottom
+}
+
+fieldset {
+  border: 0
+}
 
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
+
 @link-color: #00B7FF;
 a {
   color: @link-color;
 }
 
 /* Comment Area */
-.commentArea{
+.commentArea {
   height: 150px;
-  width: 100%;
-}
-.searchBar{
-  padding: 10px 10px 10px 28px;
+  width: 95%;
 }
 
-.ratingBtn{
+.searchBar {
+
+}
+
+.ratingBtn {
   width: 19px;
 }
-.addCommentBtn{
+
+.addCommentBtn {
   text-align: right;
   margin: 5px;
 }
+
 .author {
   color: #808080;
   text-align: right;
 }
+
 .angular-google-map-container {
   width: 100%;
-  height: 500px;
+  height: 850px;
+}
+
+#markerDetails {
+  cursor: default;
+  width: 550px;
+  position: fixed;
+  display: none;
+  padding: 5px;
+  border-radius: 3px 3px 3px 3px;
+  border: 5px solid #FFFFFF;
+  background: none repeat scroll 0 0 #FFFFFF;
+  left: 20%;
+  top: 5%;
+  z-index: 640;
+}
+
+.backgroundPopup {
+  z-index: 1;
+  position: fixed;
+  display: none;
+  height: 100%;
+  width: 100%;
+  background: #000000;
+  top: 0px;
+  left: 0px;
+}
+
+div.close {
+  background: url("../img/gtk-close.png") no-repeat scroll 0 0 transparent;
+  cursor: pointer;
+  height: 20px;
+  position: absolute;
+  right: -15px;
+  top: -1px;
+  width: 30px;
 }

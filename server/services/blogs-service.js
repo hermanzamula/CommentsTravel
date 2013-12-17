@@ -17,11 +17,8 @@ BlogService.addComment = function (blog, comment) {
 };
 
 BlogService.getBlogs = function (place, callback) {
-
-    Blog.find({coords: place}, function (err, doc) {
-
+    Blog.find({'coords.lat': place.lat, 'coords.lng':place.lng}, function (err, doc) {
         callback(doc);
-
     });
 };
 
@@ -32,7 +29,6 @@ BlogService.getAllBlogs = function (callback) {
 };
 
 BlogService.getMapedBlogs = function (callback) {
-    var plus = 1;
     var blogAreas = [];
     Blog.find({}, function (err, doc) {
         var i = doc.length - 1;
@@ -40,22 +36,20 @@ BlogService.getMapedBlogs = function (callback) {
             var blog = doc[i];
             var j = blogAreas.length - 1;
             if (blogAreas.length == 0) {
-                blogAreas.push({coords: blog.coords[0], blogs: [blog]});
+                blogAreas.push({coords: blog.coords[0], blogs: 1});
             } else {
                 var added = false;
                 while (j >= 0) {
                     var area = blogAreas[j];
-                    if (blog.coords[0].lat <= area.coords.lat + plus
-                        && blog.coords[0].lat >= area.coords.lat - plus
-                        && blog.coords[0].lng >= area.coords.lng - plus
-                        && blog.coords[0].lng <= area.coords.lng + plus) {
-                        area.blogs.push(blog);
+                    if (blog.coords[0].lat == area.coords.lat
+                        && blog.coords[0].lng == area.coords.lng) {
+                        area.blogs = area.blogs + 1;
                         added = true;
                     }
                     j--;
                 }
                 if(!added){
-                    blogAreas.push({coords: blog.coords[0], blogs: [blog]});
+                    blogAreas.push({coords: blog.coords[0], blogs: 1});
                 }
             }
             i--;

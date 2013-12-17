@@ -13,8 +13,8 @@ exports.addComment = function(req, res) {
     res.status(200).send();
 };
 
-exports.getByPlace = function(req, resp) {
-    blogService.getBlogs(req.place, function(blogs) {
+exports.getByCoords = function(req, resp) {
+    blogService.getBlogs({lat: req.params.lat, lng: req.params.lng}, function(blogs) {
         resp.json(blogs);
     })
 };

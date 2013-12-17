@@ -1,8 +1,8 @@
 angular.module("comments-back", ["ngResource"])
-    .factory("CommentGet", function($resource) {
-        return $resource('/api/blogs',{},{
-            query:{method: 'GET', isArray: true}}
-        );
+    .factory('CommentFind', function ($resource) {
+        return $resource('api/blogs/:lat/:lng', {}, {
+            query:{method: 'GET', isArray: true}
+        });
     })
     .factory("CommentMapped", function($resource) {
         return $resource('/api/blogsMapped',{},{

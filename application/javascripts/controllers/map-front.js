@@ -1,6 +1,6 @@
-angular.module("map-front", ['map-back', 'coordsForNewComment'])
-    .controller("map-controller", ['$scope', '$http', '$timeout', '$log', 'Location', 'Coordinates',
-        function ($scope, $http, $timeout, $log, Location, Coordinates) {
+angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment'])
+    .controller("map-controller", ['$scope', '$location', '$http', '$timeout', '$log', 'Location', 'Coordinates', 'CommentMapped',
+        function ($scope, $location, $http, $timeout, $log, Location, Coordinates, CommentMapped) {
 
 
             // Enable the new Google Maps visuals until it gets enabled by default.
@@ -23,7 +23,6 @@ angular.module("map-front", ['map-back', 'coordsForNewComment'])
             $scope.location.lng = 30;
 
             $scope.$watch("locationData", function (oldVal, newVal) {
-                console.log($scope.location);
                 //set coords using google API
                 if ($scope.locationData.results) {
                     $scope.location = $scope.locationData.results[0].geometry.location;
@@ -31,7 +30,22 @@ angular.module("map-front", ['map-back', 'coordsForNewComment'])
                     $scope.position.coords.longitude = $scope.location.lng;
                 }
             });
+            function convertToMarkers(data) {
+                var markersWithComments = [];
+                var i = data.length - 1;
+                while (i >= 0) {
+                    var area = data[i];
+                    markersWithComments.push({
+                        latitude: area.coords.lat,
+                        longitude: area.coords.lng,
+                        title: "Comments: " + area.blogs,
+                        onClicked: onMarkerClicked});
+                    i--;
+                }
+                return markersWithComments;
+            }
 
+            $scope.hideDetails = hideMarkerDetails;
             angular.extend($scope, {
                 map: {
                     center: {
@@ -45,78 +59,46 @@ angular.module("map-front", ['map-back', 'coordsForNewComment'])
                         streetViewControl: false,
                         panControl: false
                     },
-                    latitude: 15,
-                    longitude: 15,
-                    markers: [
-                        {
-                            latitude: 50.45,
-                            longitude: 30.52,
-                            showWindow: false,
-                            title: 'Marker 1'
-                        },
-                        {
-                            latitude: $scope.location.lat,
-                            longitude: $scope.location.lng,
-                            showWindow: false,
-                            title: 'Marker 2'
-                        },
-                        {
-                            latitude: 51,
-                            longitude: 38,
-                            showWindow: false,
-                            title: 'Marker 3'
-                        },
-                        {
-                            latitude: 52,
-                            longitude: 26,
-                            showWindow: false,
-                            title: 'Marker 4'
-                        }
-                    ],
+                    latitude: 16,
+                    longitude: 16,
+                    markers: [],
 
                     events: {
                         click: function (mapModel, eventName, originalEventArgs) {
                             // 'this' is the directive's scope
                             $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
-
                             var e = originalEventArgs[0];
-
-                            if (!$scope.map.clickedMarker) {
-                                Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
-                                $scope.map.clickedMarker = {
-                                    title: 'You clicked here',
-                                    latitude: e.latLng.lat(),
-                                    longitude: e.latLng.lng()
-                                };
-                            }
-                            else {
-                                $scope.map.clickedMarker.latitude = e.latLng.lat();
-                                $scope.map.clickedMarker.longitude = e.latLng.lng();
-                            }
-
+                            $scope.cursor.latitude = e.latLng.lat();
+                            $scope.cursor.longitude = e.latLng.lng();
+                            Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
                             $scope.$apply();
                         }
                     }
                 }
             });
-            $scope.$watch("map", function (oldVal, newVal) {
-                Coordinates.setCoords(newVal.latitude, newVal.longitude);
+            CommentMapped.query(function (data) {
+                $scope.map.markers = convertToMarkers(data);
+                $scope.cursor = {
+                    latitude: $scope.map.latitude,
+                    longitude: $scope.map.longitude,
+                    title: "Your",
+                    onClicked: onMarkerClicked};
+
+                $scope.map.markers.push($scope.cursor);
             });
 
-            var onMarkerClicked = function(marker){
-                marker.showWindow = true;
-                window.alert("Marker: lat: " + marker.latitude +", lon: " + marker.longitude + " clicked!!")
+            var onMarkerClicked = function () {
+                $location.path("/comment/" + this.latitude + "/" + this.longitude);
+                shoMarkerDetails();
             };
-
-            _.each($scope.map.markers,function(marker){
-                marker.closeClick = function(){
-                    marker.showWindow = false;
-                    $scope.$apply();
-                };
-                marker.onClicked = function(){
-                    onMarkerClicked(marker);
-                };
-            });
 
         }]
     );
+function hideMarkerDetails() {
+    $('#markerDetails').hide();
+}
+function shoMarkerDetails() {
+    $('#markerDetails').show();
+}
+
+
