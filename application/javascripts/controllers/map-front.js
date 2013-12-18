@@ -1,6 +1,6 @@
 angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment'])
-    .controller("map-controller", ['$scope', '$location', '$http', '$timeout', '$log', 'Location', 'Coordinates', 'CommentMapped',
-        function ($scope, $location, $http, $timeout, $log, Location, Coordinates, CommentMapped) {
+    .controller("map-controller", ['$scope', '$rootScope', '$location', '$http', '$timeout', '$log', 'Location', 'Coordinates', 'CommentMapped',
+        function ($scope, $rootScope, $location, $http, $timeout, $log, Location, Coordinates, CommentMapped) {
 
 
             // Enable the new Google Maps visuals until it gets enabled by default.
@@ -92,8 +92,78 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                 shoMarkerDetails();
             };
 
+            var addMarker = function (marker) {
+                if(marker && marker.latitude && marker.longitude && marker.title){
+                    if(!marker.onClicked){
+                        marker.onClicked = onMarkerClicked;  //Todo: find a better way to add onClick event
+                    }
+                    $scope.map.markers.push(marker);
+                }
+
+            };
+
+            $rootScope.$on('addMarker', function(event, marker) {
+                addMarker(marker);
+            });
+
         }]
-    );
+    )
+    .directive('autocomplete', ['$timeout',function ($timeout) {
+
+        var createInput = function (map) {
+            var input = document.createElement("input");
+            input.type = "text";
+            input.className = "angular-google-map-autocomplete";
+            map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+            return input;
+        };
+
+        return {
+            restrict: 'E',
+            templateUrl: '',
+            transclude: true,
+            require: '^googleMap',
+            scope: {},
+            controller: ["$scope", function ($scope) {
+                this.scope = $scope;
+            }],
+            link: function (scope, element, attrs, mapCtrl) {
+                $timeout(function () {
+                    var map = mapCtrl.getMap();
+                    var input = createInput(map);
+                    var autocomplete = new google.maps.places.Autocomplete(input);
+                    autocomplete.bindTo('bounds', map);
+
+                    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                        var place = autocomplete.getPlace();
+
+                        if (place && place.geometry) {
+                            if (place.geometry.viewport) {
+                                map.fitBounds(place.geometry.viewport);
+                            } else {
+                                map.setCenter(place.geometry.location);
+                                map.setZoom(17);  // Why 17? Because it looks good.
+
+                            }
+                            var marker = {
+                                latitude: place.geometry.location.nb,
+                                longitude: place.geometry.location.ob,
+                                showWindow: false,
+                                title: place.formatted_address
+                            };
+
+
+                            scope.$emit('addMarker', marker);
+
+                        } else {
+                            console.log("Cannot find this place: " + place.name); //Todo: add message
+                        }
+                    });
+                });
+            }
+        }
+    }]);
+
 function hideMarkerDetails() {
     $('#markerDetails').hide();
 }
