@@ -4311,44 +4311,7 @@ MarkerWithLabel.prototype.setMap = function (theMap) {
 
   // ... then deal with the label:
   this.label.setMap(theMap);
-};
-
-
-// Creates Autocomplete
-function Autocomplete (map) {
-    this.createInput(map);
-
-    this.autocomplete = new google.maps.places.Autocomplete(this.input);
-    var autocomplete = this.autocomplete;
-    autocomplete.bindTo('bounds', map);
-
-    google.maps.event.addListener(autocomplete, 'place_changed', function () {
-        this.place = autocomplete.getPlace();
-        var place = this.place;
-
-        if (place.geometry.viewport) {
-            map.fitBounds(place.geometry.viewport);
-        } else {
-            map.setCenter(place.geometry.location);
-            map.setZoom(17);  // Why 17? Because it looks good.
-        }
-    });
-}
-
-Autocomplete.prototype.createInput = function (map) {
-    this.input = document.createElement("input");
-    this.input.type = "text";
-    this.input.className = "angular-google-map-autocomplete";
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.input);
-};
-
-Autocomplete.prototype.getPlace = function () {
-    return this.place;
-};
-
-
-
-angular.module("google-maps")
+};;angular.module("google-maps")
     .factory('array-sync',['add-events',function(mapEvents){
 
         return function LatLngArraySync(mapArray,scope,pathEval){
@@ -4539,8 +4502,7 @@ angular.module('google-maps')
                 windows: '=windows',        // optional
                 options: '=options',        // optional
                 events: '=events',          // optional
-                bounds: '=bounds',
-                autocomplete: '=autocomplete'
+                bounds: '=bounds'
             },
 
             /**
@@ -4605,10 +4567,6 @@ angular.module('google-maps')
                     zoom: scope.zoom,
                     bounds: scope.bounds
                 }));
-
-                if (attrs.autocomplete) {
-                    var autocomplete = new Autocomplete(_m);
-                }
 
                 var dragging = false;
 
@@ -4684,8 +4642,6 @@ angular.module('google-maps')
                       });
                     });
                 });
-
-
 
                 if (angular.isDefined(scope.events) &&
                     scope.events !== null &&
@@ -5111,6 +5067,8 @@ angular.module("google-maps")
 
 
                                     var i = 0;
+                                    var oldValue;
+                                    var newValue;
                                     var oldLength = oldArray.getLength();
                                     var newLength = newArray.length;
                                     var l = Math.min(oldLength,newLength);
