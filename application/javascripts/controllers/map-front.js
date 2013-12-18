@@ -2,7 +2,18 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
     .controller("map-controller", ['$scope', '$rootScope', '$location', '$http', '$timeout', '$log', 'Location', 'Coordinates', 'CommentMapped',
         function ($scope, $rootScope, $location, $http, $timeout, $log, Location, Coordinates, CommentMapped) {
 
+            function updateMarkers() {
+                CommentMapped.query(function (data) {
+                    $scope.map.markers = convertToMarkers(data);
+                    $scope.cursor = {
+                        latitude: $scope.map.latitude,
+                        longitude: $scope.map.longitude,
+                        title: "Your",
+                        onClicked: onMarkerClicked};
 
+                    $scope.map.markers.push($scope.cursor);
+                });
+            }
 
             var onMarkerClicked = function () {
                 $location.path("/comment/" + this.latitude + "/" + this.longitude);
@@ -52,22 +63,6 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                     $scope.position.coords.longitude = $scope.location.lng;
                 }
             });
-            function convertToMarkers(data) {
-                var markersWithComments = [];
-                var i = data.length - 1;
-                while (i >= 0) {
-                    var area = data[i];
-                    markersWithComments.push({
-                        latitude: area.coords.lat,
-                        longitude: area.coords.lng,
-                        title: "Comments: " + area.blogs,
-                        onClicked: onMarkerClicked});
-                    i--;
-                }
-                return markersWithComments;
-            }
-
-            $scope.hideDetails = hideMarkerDetails;
             angular.extend($scope, {
                 map: {
                     center: {
@@ -101,17 +96,10 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
             $scope.markerDetails = new DetailsPopUp('#markerDetails', updateMarkers);
             updateMarkers();
 
-                $scope.map.markers.push($scope.cursor);
-            });
-
-            var onMarkerClicked = function () {
-                $location.path("/comment/" + this.latitude + "/" + this.longitude);
-                shoMarkerDetails();
-            };
 
             var addMarker = function (marker) {
-                if(marker && marker.latitude && marker.longitude && marker.title){
-                    if(!marker.onClicked){
+                if (marker && marker.latitude && marker.longitude && marker.title) {
+                    if (!marker.onClicked) {
                         marker.onClicked = onMarkerClicked;  //Todo: find a better way to add onClick event
                     }
                     $scope.map.markers.push(marker);
@@ -119,13 +107,13 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
 
             };
 
-            $rootScope.$on('addMarker', function(event, marker) {
+            $rootScope.$on('addMarker', function (event, marker) {
                 addMarker(marker);
             });
 
         }]
     )
-    .directive('autocomplete', ['$timeout',function ($timeout) {
+    .directive('autocomplete', ['$timeout', function ($timeout) {
 
         var createInput = function (map) {
             var input = document.createElement("input");
@@ -179,18 +167,18 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                 });
             }
         }
-    )
+    }]);
 
 var DetailsPopUp = function (selector, onClose) {
     this.selector = selector;
     this.onClose = onClose;
 };
 
-DetailsPopUp.prototype.show = function(){
+DetailsPopUp.prototype.show = function () {
     $(this.selector).show();
 };
 
-DetailsPopUp.prototype.hide = function(){
+DetailsPopUp.prototype.hide = function () {
     $(this.selector).hide();
     this.onClose();
 };
