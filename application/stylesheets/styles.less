@@ -6,7 +6,7 @@ del, dfn, em, img, ins, kbd, q, s, samp,
 small, strike, strong, sub, sup, tt, var,
 b, u, i, center,
 dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
+fieldset, form, label, legend, input, button,
 table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
@@ -19,103 +19,82 @@ time, mark, audio, video {
   font: inherit;
   vertical-align: baseline;
 }
-
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
   display: block;
 }
-
 html {
-  overflow-y: scroll
+  overflow-y: scroll;
+  height: 100%;
 }
-
 ol, ul {
   list-style: none
 }
-
 blockquote, q {
   quotes: none
 }
-
 blockquote:before, blockquote:after,
 q:before, q:after {
   content: '';
   content: none;
 }
-
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
-
 input, textarea, select {
-  font: 100% arial, sans-serif;
-  vertical-align: middle;
+  font: 14px/1.1em Arial, Helvetica, sans-serif;
   outline: none;
 }
-
+input[type="text"], input[type="mail"]{
+  .border;
+  padding: 0.14285em 0.5em; /* 2px and 7px of 14px*/
+}
 img {
   border: 0;
   vertical-align: bottom
 }
-
-fieldset {
-  border: 0
-}
-
 body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 14px/1.1em Arial, Helvetica, sans-serif;
+  height: 100%;
 }
-
 @link-color: #00B7FF;
 a {
   color: @link-color;
 }
-
+.box-sizing {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.border-radius (@radius: 5px) {
+  border-radius: @radius;
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+}
+.border (@border: 1px, @gray:#7f7f7f) {
+  border: @border solid @gray;
+}
+.position (@position:inherit, @top:auto, @right:auto, @bottom:auto, @left:auto){
+  position: @position;
+  top: @top;
+  bottom: @bottom;
+  left: @left;
+  right: @right;
+}
 /* Comment Area */
-.commentArea {
-  height: 150px;
-  width: 95%;
-}
-
-.searchBar {
-
-}
-
 .ratingBtn {
   width: 19px;
 }
-
-.addCommentBtn {
-  text-align: right;
-  margin: 5px;
-}
-
 .author {
   color: #808080;
   text-align: right;
 }
-
 .angular-google-map-container {
   width: 100%;
   height: 850px;
 }
-
-#markerDetails {
-  cursor: default;
-  width: 550px;
-  position: fixed;
-  display: none;
-  padding: 5px;
-  border-radius: 3px 3px 3px 3px;
-  border: 5px solid #FFFFFF;
-  background: none repeat scroll 0 0 #FFFFFF;
-  left: 20%;
-  top: 5%;
-  z-index: 640;
-}
-
 .backgroundPopup {
   z-index: 1;
   position: fixed;
@@ -126,13 +105,86 @@ a {
   top: 0px;
   left: 0px;
 }
+.angular-google-map .angular-google-map-autocomplete {
+  padding: 0.35714em 0.5em; /* 5px and 7px of 14px */
+  .border-radius;
+  margin: 2.14285em 0 0; /* 30px of 14px */
+  .border;
+  min-width: 15em; /* 210px of 14px*/
+}
 
-div.close {
-  background: url("../img/gtk-close.png") no-repeat scroll 0 0 transparent;
-  cursor: pointer;
-  height: 20px;
-  position: absolute;
-  right: -15px;
-  top: -1px;
-  width: 30px;
+#markerDetails {
+  cursor: default;
+  width: 30%;
+  .position (fixed, 5%, auto, auto, 20%);
+  display: none;
+  padding: 5px;
+  .border-radius (10px);
+  .border(10px, #fff);
+  background: #fff;
+  z-index: 640;
+
+  .searchBar {
+    form {
+      float: right;
+      margin-right: 2em;
+    }
+    h2 {
+      font-size: 1.71428em; /* 20px of 14px */
+      line-height: 1.1em;
+      margin-bottom: 0.5em; /* 20px of 14px */
+    }
+  }
+  .commentsList {
+    margin-bottom: 1em;
+
+    button{
+      color: #fff;
+      background: #7f7f7f;
+      .border-radius (3px);
+      padding: 0.21428em 0.5em; /* 3px and 7px of 14px */
+    }
+  }
+  .commentForm {
+    .heading {
+      margin-bottom: 0.5em; /* 7px of 14px*/
+      .username {
+        width: 20em;
+      }
+      h3 {
+        font-size: 1em;
+        line-height: 1.57142em; /* 20px of 14px*/
+        float: right;
+      }
+    }
+    .commentArea {
+      height: 10em; /* 140px of 14px*/
+      width: 100%;
+      max-width: 100%;
+      max-height: 10em;
+      padding: 0.5em; /* 7px of 14px */
+      .box-sizing;
+      .border;
+    }
+    .btn-holder {
+      width: 100%;
+      overflow: hidden;
+      padding-top: 0.5em;
+
+      .addCommentBtn {
+        float: right;
+        color: #fff;
+        background: #7f7f7f;
+        .border-radius (3px);
+        padding: 0.5em;
+      }
+    }
+  }
+  div.close {
+    background: url("../img/gtk-close.png") no-repeat scroll 0 0 transparent;
+    cursor: pointer;
+    height: 20px;
+    .position (absolute, 0.5em, -0.71428em); /* 7px and 10px of 14px */
+    width: 30px;
+  }
 }
