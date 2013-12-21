@@ -17,7 +17,7 @@ BlogService.addComment = function (blog, comment) {
 };
 
 BlogService.getBlogs = function (place, callback) {
-    Blog.find({'coords.lat': place.lat, 'coords.lng':place.lng}, function (err, doc) {
+    Blog.find({'coords.lat': place.lat, 'coords.lng': place.lng}, function (err, doc) {
         callback(doc);
     });
 };
@@ -28,43 +28,39 @@ BlogService.getAllBlogs = function (callback) {
     });
 };
 
-BlogService.updateRating = function(id, rating, callback){
-    Blog.findByIdAndUpdate(id, {rating: rating}, null, function(err){
+BlogService.updateRating = function (id, rating, callback) {
+    Blog.findByIdAndUpdate(id, {rating: rating}, null, function (err) {
         console.log(err);
-        if(callback){
+        if (callback) {
             callback();
         }
     })
 };
 
 BlogService.getMappedBlogs = function (callback) {
-    var blogAreas = [];
-    Blog.find({}, function (err, doc) {
-        var i = doc.length - 1;
+    var mr = {};
+    mr.map = function () {
+        emit({lat: this.coords[0].lat, lng: this.coords[0].lng}, 1);
+    };
+    mr.reduce = function (key, value) {
+        return value.length;
+    };
+    Blog.mapReduce(mr, function (err, results, stats) {
+        if (err) console.log(err);
+        callback(convertToBlogAreas(results));
+    });
+
+    function convertToBlogAreas(mrResult) {
+        var i = mrResult.length - 1;
+        var result = [];
         while (i >= 0) {
-            var blog = doc[i];
-            var j = blogAreas.length - 1;
-            if (blogAreas.length == 0) {
-                blogAreas.push({coords: blog.coords[0], blogs: 1});
-            } else {
-                var added = false;
-                while (j >= 0) {
-                    var area = blogAreas[j];
-                    if (blog.coords[0].lat == area.coords.lat
-                        && blog.coords[0].lng == area.coords.lng) {
-                        area.blogs = area.blogs + 1;
-                        added = true;
-                    }
-                    j--;
-                }
-                if(!added){
-                    blogAreas.push({coords: blog.coords[0], blogs: 1});
-                }
-            }
+            var object = mrResult[i];
+            result.push({coords: object._id, blogs: object.value});
             i--;
         }
-        callback(blogAreas);
-    });
+        return result;
+    }
+
 };
 
 exports.BlogService = BlogService;

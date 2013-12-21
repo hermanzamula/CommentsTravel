@@ -51,5 +51,5 @@ angular.module('comments-front', ['comments-back', 'coordsForNewComment'])
 ;
 
 function isUserCanVote() {
-    return (typeof (Storage) !== "undefined");
+    return (typeof (Storage) !== "undefined"); // check browser for supporting local storage
 }
