@@ -4,7 +4,7 @@ var BlogService = {};
 
 BlogService.saveBlog = function (blog) {
     var newBlog = new Blog(blog);
-    newBlog.save(function (err, dov) {
+    newBlog.save(function (err) {
         if (err) console.log(err);
 
     });
@@ -28,7 +28,16 @@ BlogService.getAllBlogs = function (callback) {
     });
 };
 
-BlogService.getMapedBlogs = function (callback) {
+BlogService.updateRating = function(id, rating, callback){
+    Blog.findByIdAndUpdate(id, {rating: rating}, null, function(err){
+        console.log(err);
+        if(callback){
+            callback();
+        }
+    })
+};
+
+BlogService.getMappedBlogs = function (callback) {
     var blogAreas = [];
     Blog.find({}, function (err, doc) {
         var i = doc.length - 1;
