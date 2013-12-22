@@ -34,7 +34,7 @@ exports.getAllMapped = function (req, resp) {
 
 exports.getAllMappedByScale = function(req, resp) {
     var params = req.query;
-    blogService.getScaledBlogs([params.lng, params.lat], params.radius, params.limit || Number.MAX_VALUE, function(blogs) {
+    blogService.getScaledBlogs([params.lng, params.lat], params.radius, params.limit || 100000, function(blogs) {
         resp.json(blogs)
     })
 };
