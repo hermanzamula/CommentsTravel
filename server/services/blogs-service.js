@@ -4,7 +4,7 @@ var _ = require('lodash-node');
 var BlogService = {};
 
 BlogService.saveBlog = function (blog) {
-    blog.coords = [blog.coords[0].lat, blog.coords[0].lng];
+    blog.coords = [parseFloat(blog.coords[0].lng), parseFloat(blog.coords[0].lat)];
     var newBlog = new Blog(blog);
     newBlog.save(function (err) {
         if (err) console.log(err);
@@ -18,7 +18,7 @@ BlogService.addComment = function (blog, comment) {
 };
 
 BlogService.getBlogs = function (place, callback) {
-    Blog.find({'coords': [place.lat, place.lng]}, function (err, doc) {
+    Blog.find({'coords': [place.lng, place.lat]}, function (err, doc) {
         callback(doc);
     });
 };
@@ -79,8 +79,8 @@ BlogService.getScaledBlogs = function(center, radius, limit, callback) {
 
             result.push({
                 coords: {
-                    lat: blog.coords[0],
-                    lng: blog.coords[1]
+                    lng: blog.coords[0],
+                    lat: blog.coords[1]
                 },
                 blogs: blog.blogs
             })

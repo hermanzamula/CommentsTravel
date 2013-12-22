@@ -1,6 +1,9 @@
 var mongoose = require(global.rootPath('lib/mongoose'));
+var Aggregate = require('mongoose/lib/aggregate');
 var _ = require('lodash-node');
 Schema = mongoose.Schema;
+
+var EARTH_RADIUS = 6371;
 
 var Comment = new Schema({
     username: {
@@ -83,37 +86,38 @@ Blog.methods.addComment = function (comment) {
 /**
  *
  * @param center [longitude, latitude]: array
- * @param nearM distance from center, in meters
+ * @param nearKm distance from center, in km
  * @param limit return items limit.
  * @param callback
  *
  * Items is ordered by comments size within.
  */
-Blog.statics.findByPlace = function (center, nearM, limit, callback) {
+Blog.statics.findByPlace = function (center, nearKm, limit, callback) {
+
+    var cords = _.transform(center, function(result, coord){
+        result.push(parseFloat(coord));
+    });
 
     var match = {
-        near: _.transform(center, function(result, coord){
-            result.push(parseFloat(coord));
-        }),
-        maxDistance: nearM,
-        distanceField: 'coordsDist'
+        near:  cords,
+        maxDistance: parseFloat(parseFloat(nearKm) / parseFloat(EARTH_RADIUS)),
+        num: 100000,
+        distanceField: "dist",
+        spherical: true
     };
-    this
-        .aggregate([
-            {$geoNear: match},
-            {$group: {
-                    _id: "$coords",
-                    blogs: {$sum: 1}
-                }
-            },
-            {$project: {coords: "$_id", blogs: 1, commentsLength: 1}},
-            { $sort: {blogs: -1}}, //TODO: Replace blogs by comments. Sort by comments
-            {$limit: limit}
-        ])
+
+    this.aggregate()
+        .near(match)
+        .group({
+            _id: "$coords",
+            blogs: {$sum: 1}
+        })
+        .project({coords: "$_id", blogs: 1, commentsLength: 1})
+        .limit(limit)
         .exec(function (err, docs) {
             err && console.log(err);
             callback(docs || []);
-        })
+        });
 };
 
 exports.Blog = mongoose.model('Blog', Blog);

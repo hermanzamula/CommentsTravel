@@ -7,8 +7,12 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                     latitude: $scope.map.latitude,
                     longitude: $scope.map.longitude
                 };
-                CommentsMappedScaled.query({lat: $scope.map.center.latitude, lng: $scope.map.center.longitude, radius: distHaversine($scope.map.center, leftCorner)}
-                    , function (data) {
+                CommentsMappedScaled.query({
+                        lat: Coordinates.getCoords().center.lat,
+                        lng: Coordinates.getCoords().center.lng,
+                        radius: Coordinates.getRadius()/*,
+                        limit: limit*/
+                    } , function (data) {
                         $scope.map.markers = convertToMarkers(data);
                         $scope.cursor = {
                             latitude: $scope.map.latitude,
@@ -18,24 +22,6 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
 
                         $scope.map.markers.push($scope.cursor);
                     });
-
-                //Inspired by http://stackoverflow.com/questions/1502590/calculate-distance-between-two-points-in-google-maps-v3
-                function rad(x) {
-                    return x * Math.PI / 180;
-                }
-
-                function distHaversine(p1, p2) {
-                    var R = 6371; // earth's mean radius in km
-                    var dLat = rad(p2.latitude - p1.latitude);
-                    var dLong = rad(p2.longitude - p1.longitude);
-
-                    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                        Math.cos(rad(p1.latitude)) * Math.cos(rad(p2.latitude)) * Math.sin(dLong / 2) * Math.sin(dLong / 2);
-                    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                    var d = R * c;
-
-                    return d.toFixed(3) * 1000;//meters
-                }
             }
 
             var onMarkerClicked = function () {
@@ -112,10 +98,23 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                             $scope.cursor.longitude = e.latLng.lng();
                             Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
                             $scope.$apply();
+                        },
+                        'bounds_changed': function(mapModel, eventName, originalEventArgs) {
+
+                            var center = mapModel.getCenter();
+                            var northEast = mapModel.getBounds().getNorthEast();
+                            var southWest = mapModel.getBounds().getSouthWest();
+                            Coordinates.setCenter(center.lat(), center.lng());
+                            Coordinates.setLeftCorner(northEast.lat(), northEast.lng());
+                            Coordinates.setRightCorner(southWest.lat(), southWest.lng());
                         }
                     }
                 }
             });
+
+            Coordinates.setCenter($scope.map.center.latitude, $scope.map.center.longitude);
+            Coordinates.setLeftCorner($scope.map.latitude, $scope.map.longitude);
+
             $scope.markerDetails = new DetailsPopUp('#markerDetails', updateMarkers);
             updateMarkers();
 
@@ -151,10 +150,6 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
             templateUrl: '',
             transclude: true,
             require: '^googleMap',
-            scope: {},
-            controller: ["$scope", function ($scope) {
-                this.scope = $scope;
-            }],
             link: function (scope, element, attrs, mapCtrl) {
                 $timeout(function () {
                     var map = mapCtrl.getMap();
