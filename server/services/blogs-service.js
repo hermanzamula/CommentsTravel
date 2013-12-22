@@ -1,4 +1,5 @@
 var Blog = require(global.rootPath("server/model/blog")).Blog;
+var _ = require('lodash-node');
 
 var BlogService = {};
 
@@ -7,7 +8,6 @@ BlogService.saveBlog = function (blog) {
     var newBlog = new Blog(blog);
     newBlog.save(function (err) {
         if (err) console.log(err);
-
     });
 };
 
@@ -64,26 +64,29 @@ BlogService.getMappedBlogs = function (callback) {
 
 };
 
+/**
+ *
+ * @param center [longitude, latitude]: array<Number>
+ * @param radius
+ * @param limit
+ * @param callback
+ */
 BlogService.getScaledBlogs = function(center, radius, limit, callback) {
-    Blog.findByPlace(center, radius, limit, function(err, result){
 
-        if(err) {
-            callback([]);
-            return;
-        }
+    Blog.findByPlace(center, radius, limit, function(blogs){
 
-        var mapPoint = [];
-        result.forEach(function(item) {
-            var coords = {
+        callback(_.transform(blogs, function(result, blog) {
+
+            result.push({
                 coords: {
-                    lat: item.coords[0],
-                    lng: item.coords[1]
+                    lat: blog.coords[0],
+                    lng: blog.coords[1]
                 },
-                blogs: item.blogs
-            };
-            mapPoint.push(coords);
-        });
-        callback(mapPoint);
+                blogs: blog.blogs
+            })
+
+        }));
+
     });
 };
 

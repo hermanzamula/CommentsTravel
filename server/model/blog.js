@@ -1,4 +1,5 @@
 var mongoose = require(global.rootPath('lib/mongoose'));
+var _ = require('lodash-node');
 Schema = mongoose.Schema;
 
 var Comment = new Schema({
@@ -24,17 +25,6 @@ var Comment = new Schema({
         type: String,
         required: true,
         unique: false
-    }
-});
-
-var Coordinate = new Schema({
-    lat: {
-        type: Number,
-        required: true
-    },
-    lng: {
-        type: Number,
-        required: true
     }
 });
 
@@ -92,7 +82,7 @@ Blog.methods.addComment = function (comment) {
 
 /**
  *
- * @param center type: Coordinate
+ * @param center [longitude, latitude]: array
  * @param nearM distance from center, in meters
  * @param limit return items limit.
  * @param callback
@@ -101,10 +91,10 @@ Blog.methods.addComment = function (comment) {
  */
 Blog.statics.findByPlace = function (center, nearM, limit, callback) {
 
-    console.log();
-
     var match = {
-        near: [parseFloat(center.lng), parseFloat(center.lat)],
+        near: _.transform(center, function(result, coord){
+            result.push(parseFloat(coord));
+        }),
         maxDistance: nearM,
         distanceField: 'coordsDist'
     };
@@ -122,7 +112,7 @@ Blog.statics.findByPlace = function (center, nearM, limit, callback) {
         ])
         .exec(function (err, docs) {
             err && console.log(err);
-            callback(err, docs)
+            callback(docs || []);
         })
 };
 
