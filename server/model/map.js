@@ -14,7 +14,8 @@ var Place = new Schema({
         type: String
     },
     location: {
-        type: [Number]
+        type: [Number],
+        index: "2d"
     },
     infoUrl: {
         type: String

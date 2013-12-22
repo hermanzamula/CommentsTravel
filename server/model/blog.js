@@ -59,26 +59,71 @@ var Blog = new Schema({
         unique: false
     },
     coords: {
-        type: [Coordinate],
+        type: [Number],
+        index: "2d",
         required: true
+    },
+    commentsLength: {
+        type: Number
     },
     tags: [String],
     places: [Number]
 });
 
+Blog.index({ coords: true });
+
 Blog.methods.increaseRating = function () {
-    this.rating += 1;
-    this.save();
+    this.update({
+        $inc: {rating: 1}
+    });
 };
 
 Blog.methods.decreaseRating = function () {
-    this.rating -= 1;
-    this.save();
+    this.update({
+        $inc: {rating: -1}
+    });
 };
 
 Blog.methods.addComment = function (comment) {
     this.comments.push(comment);
+    this.commentsLength = this.commentsLength + 1 || 1;
     this.save();
+};
+
+/**
+ *
+ * @param center type: Coordinate
+ * @param nearM distance from center, in meters
+ * @param limit return items limit.
+ * @param callback
+ *
+ * Items is ordered by comments size within.
+ */
+Blog.statics.findByPlace = function (center, nearM, limit, callback) {
+
+    console.log();
+
+    var match = {
+        near: [parseFloat(center.lng), parseFloat(center.lat)],
+        maxDistance: nearM,
+        distanceField: 'coordsDist'
+    };
+    this
+        .aggregate([
+            {$geoNear: match},
+            {$group: {
+                    _id: "$coords",
+                    blogs: {$sum: 1}
+                }
+            },
+            {$project: {coords: "$_id", blogs: 1, commentsLength: 1}},
+            { $sort: {blogs: -1}}, //TODO: Replace blogs by comments. Sort by comments
+            {$limit: limit}
+        ])
+        .exec(function (err, docs) {
+            err && console.log(err);
+            callback(err, docs)
+        })
 };
 
 exports.Blog = mongoose.model('Blog', Blog);

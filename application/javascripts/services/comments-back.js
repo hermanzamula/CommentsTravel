@@ -9,6 +9,9 @@ angular.module("comments-back", ["ngResource"])
                 query: {method: 'GET', isArray: true}}
         );
     })
+    .factory("CommentsMappedScaled", function ($resource) {
+        return $resource('/api/blogsMappedScaled');
+    })
     .factory("CommentAdd", function ($resource) {
         return $resource('/api/blogs', {}, {
                 query: {method: 'POST', isArray: false}}

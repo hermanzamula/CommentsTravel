@@ -3,6 +3,7 @@ var Blog = require(global.rootPath("server/model/blog")).Blog;
 var BlogService = {};
 
 BlogService.saveBlog = function (blog) {
+    blog.coords = [blog.coords[0].lat, blog.coords[0].lng];
     var newBlog = new Blog(blog);
     newBlog.save(function (err) {
         if (err) console.log(err);
@@ -17,7 +18,7 @@ BlogService.addComment = function (blog, comment) {
 };
 
 BlogService.getBlogs = function (place, callback) {
-    Blog.find({'coords.lat': place.lat, 'coords.lng': place.lng}, function (err, doc) {
+    Blog.find({'coords': [place.lat, place.lng]}, function (err, doc) {
         callback(doc);
     });
 };
@@ -40,7 +41,7 @@ BlogService.updateRating = function (id, rating, callback) {
 BlogService.getMappedBlogs = function (callback) {
     var mr = {};
     mr.map = function () {
-        emit({lat: this.coords[0].lat, lng: this.coords[0].lng}, 1);
+        emit({lat: this.coords.lat, lng: this.coords.lng}, 1);
     };
     mr.reduce = function (key, value) {
         return value.length;
@@ -61,6 +62,29 @@ BlogService.getMappedBlogs = function (callback) {
         return result;
     }
 
+};
+
+BlogService.getScaledBlogs = function(center, radius, limit, callback) {
+    Blog.findByPlace(center, radius, limit, function(err, result){
+
+        if(err) {
+            callback([]);
+            return;
+        }
+
+        var mapPoint = [];
+        result.forEach(function(item) {
+            var coords = {
+                coords: {
+                    lat: item.coords[0],
+                    lng: item.coords[1]
+                },
+                blogs: item.blogs
+            };
+            mapPoint.push(coords);
+        });
+        callback(mapPoint);
+    });
 };
 
 exports.BlogService = BlogService;
