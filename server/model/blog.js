@@ -1,5 +1,4 @@
 var mongoose = require(global.rootPath('lib/mongoose'));
-var Aggregate = require('mongoose/lib/aggregate');
 var _ = require('lodash-node');
 Schema = mongoose.Schema;
 
@@ -113,6 +112,7 @@ Blog.statics.findByPlace = function (center, nearKm, limit, callback) {
             blogs: {$sum: 1}
         })
         .project({coords: "$_id", blogs: 1, commentsLength: 1})
+        .sort('-blogs')
         .limit(limit)
         .exec(function (err, docs) {
             err && console.log(err);
