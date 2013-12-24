@@ -14,7 +14,8 @@ exports.addComment = function (req, res) {
 };
 
 exports.getByCoords = function (req, resp) {
-    blogService.getBlogs({lat: req.params.lat, lng: req.params.lng}, function (blogs) {
+    var params = req.params;
+    blogService.getBlogs({lat: params.lat, lng: params.lng},  function (blogs) {
         resp.json(blogs);
     })
 };
@@ -28,6 +29,13 @@ exports.getAll = function (req, resp) {
 exports.getAllMapped = function (req, resp) {
     blogService.getMappedBlogs(function (blogAreas) {
         resp.json(blogAreas);
+    })
+};
+
+exports.getAllMappedByScale = function(req, resp) {
+    var params = req.query;
+    blogService.getScaledBlogs([params.lng, params.lat], params.radius, params.limit || 100000, function(blogs) {
+        resp.json(blogs)
     })
 };
 

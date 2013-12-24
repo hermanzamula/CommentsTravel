@@ -42,6 +42,8 @@ var apiPath = "/api";
 //--------------------------------- Blog routes -----------------------------------------------------------------------
 app.get(apiPath + "/blogs/:lat/:lng", blogs.getByCoords);
 app.get(apiPath + "/blogsMapped", blogs.getAllMapped);
+app.get(apiPath + "/blogsMappedScaled", blogs.getAllMappedByScale);
+
 app.post(apiPath + "/blogs", blogs.save);
 app.get(apiPath + "/blogs/rate/:blog/:rating", blogs.updateRating);
 
