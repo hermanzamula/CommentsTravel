@@ -9,6 +9,7 @@
     <script src="../lib/lodash.js"></script>
 
     <script src="../javascripts/controllers/map-front.js"></script>
+    <script src="../javascripts/controllers/markers-list.js"></script>
     <script src="../javascripts/controllers/comments-front.js"></script>
     <script src="../javascripts/services/comments-back.js"></script>
     <script src="../javascripts/services/map-back.js"></script>
@@ -79,7 +80,7 @@
          longitude="map.longitude"
             >
         <autocomplete></autocomplete>
-        <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="m.onClicked()">
+        <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="m.onClick()">
             <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
         </marker>
 
