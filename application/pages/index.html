@@ -85,7 +85,7 @@
         </marker>
 
     </div>
-    <div id="markerDetails" class="no-comments">
+    <div id="markerDetails" data-ng-class="{'no-comments': !markerDetails.commentsCount}">
         <!--<div class="marker green"></div>-->
         <a href="#" class="close" ng-click="markerDetails.hide()"><span></span></a>
         <div ng-view></div>

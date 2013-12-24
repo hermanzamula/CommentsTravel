@@ -28,6 +28,7 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                 $location.path("/comment/" + this.latitude + "/" + this.longitude);
                 Coordinates.setCoords(this.latitude, this.longitude);
                 $scope.markerDetails.show();
+                $scope.markerDetails.commentsCount = this.commentsCount;
             };
 
             function convertToMarkers(data) {
@@ -39,6 +40,7 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                         latitude: area.coords.lat,
                         longitude: area.coords.lng,
                         title: "Comments: " + area.blogs,
+                        commentsCount: area.blogs,
                         onClicked: onMarkerClicked});
                     i--;
                 }
