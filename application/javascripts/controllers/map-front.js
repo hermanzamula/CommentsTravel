@@ -1,17 +1,42 @@
-angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment'])
-    .controller("map-controller", ['$scope', '$rootScope', '$location', '$http', '$timeout', '$log', 'Location', 'Coordinates', 'CommentMapped',
-        function ($scope, $rootScope, $location, $http, $timeout, $log, Location, Coordinates, CommentMapped) {
+angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment', 'markers-list'])
+    .controller("map-controller", [
+        '$scope',
+        '$rootScope',
+        '$location',
+        '$http',
+        '$timeout',
+        '$log',
+        'Location',
+        'Coordinates',
+        'CommentMapped',
+        'Markers',
+        function (
+            $scope,
+            $rootScope,
+            $location,
+            $http,
+            $timeout,
+            $log,
+            Location,
+            Coordinates,
+            CommentMapped,
+            Markers
+            ) {
 
             function updateMarkers() {
                 CommentMapped.query(function (data) {
-                    $scope.map.markers = convertToMarkers(data);
-                    $scope.cursor = {
+                    var cursor = {
                         latitude: $scope.map.latitude,
                         longitude: $scope.map.longitude,
-                        title: "Your",
-                        onClicked: onMarkerClicked};
+                        title: "Your"
+                    };
 
-                    $scope.map.markers.push($scope.cursor);
+                    Markers.addMarkers(cursor, onMarkerClicked);
+
+                    //add markers from database
+                    Markers.addMarkers(convertToMarkers(data), onMarkerClicked);
+
+                    $scope.map.markers = Markers.getMarkers();
                 });
             }
 
@@ -30,7 +55,7 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                         latitude: area.coords.lat,
                         longitude: area.coords.lng,
                         title: "Comments: " + area.blogs,
-                        onClicked: onMarkerClicked});
+                        });
                     i--;
                 }
                 return markersWithComments;
@@ -51,24 +76,47 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
             });
 
             //set coords by default
-            $scope.location = {};
-            $scope.location.lat = 50;
-            $scope.location.lng = 30;
+            $scope.location = {
+                latitude: 50,
+                longitude: 30
+            };
 
             $scope.$watch("locationData", function (oldVal, newVal) {
                 //set coords using google API
                 if ($scope.locationData.results) {
                     $scope.location = $scope.locationData.results[0].geometry.location;
-                    $scope.position.coords.latitude = $scope.location.lat;
-                    $scope.position.coords.longitude = $scope.location.lng;
+                    $scope.position.coords.latitude = $scope.location.latitude;
+                    $scope.position.coords.longitude = $scope.location.longitude;
                 }
             });
+
+            var testMarkersData = [
+                {
+                    latitude: 45,
+                    longitude: 34,
+                    showWindow: false,
+                    title: 'Marker 2'
+                },
+                {
+                    latitude: 15,
+                    longitude: 30,
+                    showWindow: false,
+                    title: 'Marker 2'
+                },
+                {
+                    //icon: 'plane.png',
+                    latitude: 37,
+                    longitude: 72,
+                    showWindow: false,
+                    title: 'Plane'
+                }
+            ];
+            Markers.addMarkers(testMarkersData, onMarkerClicked);
+
+
             angular.extend($scope, {
                 map: {
-                    center: {
-                        latitude: $scope.location.lat,
-                        longitude: $scope.location.lng
-                    },
+                    center: $scope.location,
                     zoom: 5,
                     dragging: false,
                     bounds: {},
@@ -78,42 +126,44 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                     },
                     latitude: 16,
                     longitude: 16,
-                    markers: [],
+                    markers: Markers.getMarkers(),
 
                     events: {
                         click: function (mapModel, eventName, originalEventArgs) {
                             // 'this' is the directive's scope
                             $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
                             var e = originalEventArgs[0];
+                           /*
                             $scope.cursor.latitude = e.latLng.lat();
                             $scope.cursor.longitude = e.latLng.lng();
                             Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
                             $scope.$apply();
+                            */
+                            var markerData = {
+                                latitude: e.latLng.lat(),
+                                longitude: e.latLng.lng(),
+                                title: "My marker"
+                            };
+
+                            Markers.addMarkers(markerData, onMarkerClicked);
+
+                            $scope.$apply();
+                            // Todo: add event onClick to the map
                         }
                     }
                 }
             });
             $scope.markerDetails = new DetailsPopUp('#markerDetails', updateMarkers);
-            updateMarkers();
+            //updateMarkers();
 
-
-            var addMarker = function (marker) {
-                if (marker && marker.latitude && marker.longitude && marker.title) {
-                    if (!marker.onClicked) {
-                        marker.onClicked = onMarkerClicked;  //Todo: find a better way to add onClick event
-                    }
-                    $scope.map.markers.push(marker);
-                }
-
-            };
-
-            $rootScope.$on('addMarker', function (event, marker) {
-                addMarker(marker);
+            $scope.$on('addMarker', function (event, markerData) {
+                console.log(markerData);
+                Markers.addMarkers(markerData, onMarkerClicked);
             });
 
         }]
     )
-    .directive('autocomplete', ['$timeout', function ($timeout) {
+    .directive('autocomplete', ['$timeout', "$rootScope", function ($timeout, $rootScope) {
 
         var createInput = function (map) {
             var input = document.createElement("input");
@@ -125,13 +175,8 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
 
         return {
             restrict: 'E',
-            templateUrl: '',
             transclude: true,
             require: '^googleMap',
-            scope: {},
-            controller: ["$scope", function ($scope) {
-                this.scope = $scope;
-            }],
             link: function (scope, element, attrs, mapCtrl) {
                 $timeout(function () {
                     var map = mapCtrl.getMap();
@@ -156,9 +201,7 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                                 showWindow: false,
                                 title: place.formatted_address
                             };
-
-
-                            scope.$emit('addMarker', marker);
+                            $rootScope.$broadcast('addMarker', marker);
 
                         } else {
                             console.log("Cannot find this place: " + place.name); //Todo: add message
@@ -167,11 +210,11 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                 });
             }
         }
-    }]);
+    }])
 
 var DetailsPopUp = function (selector, onClose) {
     this.selector = selector;
-    this.onClose = onClose;
+    //this.onClose = onClose;
 };
 
 DetailsPopUp.prototype.show = function () {
@@ -180,7 +223,7 @@ DetailsPopUp.prototype.show = function () {
 
 DetailsPopUp.prototype.hide = function () {
     $(this.selector).hide();
-    this.onClose();
+    //this.onClose();
 };
 
 
