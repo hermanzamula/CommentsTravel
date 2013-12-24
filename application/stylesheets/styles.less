@@ -130,7 +130,7 @@ a {
   .position (fixed, auto, auto, 0, 10%);
   display: none;
   padding: 1em;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.9);
   z-index: 640;
   .box-sizing;
 
@@ -155,10 +155,16 @@ a {
     }
   }
   .commentForm {
-    .heading {
+    .row {
       margin-bottom: 0.5em; /* 7px of 14px*/
+      .item-name {
+        float: left;
+        width: 37%;
+      }
       .username {
-        width: 20em;
+        width: 100%;
+        margin-top: 0.5em;
+        .box-sizing;
       }
       h3 {
         font-size: 1em;
@@ -166,14 +172,19 @@ a {
         float: right;
       }
     }
+    .item-area {
+      float: right;
+      width: 60%;
+    }
     .commentArea {
       height: 10em; /* 140px of 14px*/
       width: 100%;
       max-width: 100%;
-      max-height: 10em;
+      max-height: 5em;
       padding: 0.5em; /* 7px of 14px */
       .box-sizing;
       .border;
+      margin-top: 0.5em;
     }
     .btn-holder {
       width: 100%;
@@ -182,10 +193,17 @@ a {
 
       .addCommentBtn {
         float: right;
+        cursor: pointer;
         color: #fff;
         background: #7f7f7f;
         .border-radius (3px);
         padding: 0.5em;
+      }
+      .addCommentBtn:hover {
+        background: #666;
+      }
+      .addCommentBtn:active {
+        background: #4d4d4d;
       }
     }
   }
@@ -196,7 +214,7 @@ a {
     .position (absolute, -1.14285em, 50%); /* 7px and 10px of 14px */
     .border-radius (3px 3px 0 0);
     width: 2em;
-    margin-left: -1em;
+    margin-right: -1em;
   }
   .close span {
     display: block;
@@ -210,6 +228,34 @@ a {
     background-position: -1px 0;
   }
 }
+#markerDetails.no-comments {
+  width: 60%;
+  .position (fixed, auto, auto, 0, 20%);
+  .commentForm {
+    .row {
+      .item-name,
+      .item-area {
+        float: none;
+        width: 100%;
+      }
+      .item-name {
+        margin-bottom: 1em;
+      }
+    }
+  }
+}
+@media only screen
+and (min-width : 800px) {
+  #markerDetails {
+    width: 60%;
+    left: 20%;
+  }
+  #markerDetails.no-comments {
+    width: 40%;
+    left: 30%;
+  }
+}
+
 .marker {
   position: absolute;
   top: -1em;

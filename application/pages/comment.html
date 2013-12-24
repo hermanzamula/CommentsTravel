@@ -1,6 +1,6 @@
 <div class="searchBar">
     <form>
-        <label>Filter: <input type="text" ng-model="query"></label>
+        <label>Filter: <!--<input type="text" ng-model="query">--></label>
         <select ng-model="orderProp">
             <option value="-date">Date</option>
             <option value="-rating">Rating</option>
@@ -30,11 +30,15 @@
 
 <div class="commentForm">
     <form name="newCommentForm" novalidate class="newComment" ng-submit="addComment()">
-        <div class="heading">
-            <label>Username: <input type="text" class="username" ng-model="newComment.username" name="comment" required/></label>
-            <h3>Rating {{newComment.rating}}</h3>
+        <div class="row">
+            <div class="item-name">
+                <label>Username: <input type="text" class="username" ng-model="newComment.username" name="comment" required/></label>
+            </div>
+            <div class="item-area">
+                <label>Message: <textarea ng-model="newComment.body" class="commentArea" required></textarea></label>
+            </div>
+            <!--<h3>Rating {{newComment.rating}}</h3>-->
         </div>
-        <textarea ng-model="newComment.body" class="commentArea" required></textarea>
         <div class="btn-holder">
             <button type="submit" class="addCommentBtn" ng-disabled="newCommentForm.$invalid">Add comment</button>
         </div>
