@@ -18,6 +18,7 @@ time, mark, audio, video {
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
+  outline: none;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
@@ -58,10 +59,15 @@ img {
 body {
   font: 14px/1.1em Arial, Helvetica, sans-serif;
   height: 100%;
+  color: #111;
 }
-@link-color: #00B7FF;
+@link-color: #0a67a3;
 a {
   color: @link-color;
+  text-decoration: underline;
+}
+a:hover {
+  text-decoration: none;
 }
 .box-sizing {
   -webkit-box-sizing: border-box;
@@ -146,17 +152,85 @@ a {
       line-height: 1.1em;
       margin-bottom: 0.5em; /* 10.5px of 14px */
     }
+    h3 {
+      font-size: 1em;
+      display: inline-block;
+      margin-left: 1em;
+    }
+    h3 span {
+      font-size: 1.14285em;
+      color: #00b454;
+      font-weight: bold;
+    }
   }
   .commentsList {
     float: left;
     width: 48%;
     margin-bottom: 1em;
 
-    button{
-      color: #fff;
-      background: #7f7f7f;
-      .border-radius (3px);
-      padding: 0.21428em 0.5em; /* 3px and 7px of 14px */
+    .commentsListInfo {
+      clear: both;
+      max-height: 15em;
+      overflow-y: auto;
+
+      li {
+        width: 100%;
+        overflow: hidden;
+        margin-bottom: 0.5em;
+        padding-top: 0.5em;
+        border-top: 1px dashed #7f7f7f;
+      }
+      li:first-child {
+        border-top: none;
+      }
+    }
+    .all-comments {
+      float: right;
+      margin-top: -2em;
+    }
+    .rating {
+      float: left;
+      width: 3em;
+
+      button {
+        display: block;
+        cursor: pointer;
+        width: 2em;
+        height: 0.5em;
+        background: url("../img/sprite.png") no-repeat -17px 0;
+        text-indent: -9999px;
+        overflow: hidden;
+      }
+      .increaseButton {
+        background-position: -17px 0;
+      }
+      .decreaseBtn {
+        background-position: -17px -9px;
+      }
+      .info {
+        display: block;
+        font-size: 1.14285em;
+        padding: 0.21428em 0;
+        font-weight: bold;
+        color: #00b454;
+        width: 1.75em;
+        text-align: center;
+      }
+    }
+    .username {
+      font-style: italic;
+      color: #808080;
+      text-transform: capitalize;
+    }
+    .textbox {
+      overflow: hidden;
+
+      .comment {
+        margin-bottom: 0.5em;
+      }
+      .info {
+        font-size: 0.85714em;
+      }
     }
   }
   .commentForm {
@@ -187,10 +261,10 @@ a {
       width: 60%;
     }
     .commentArea {
-      height: 10em; /* 140px of 14px*/
+      height: 9.28571em; /* 130px of 14px*/
       width: 100%;
       max-width: 100%;
-      max-height: 5em;
+      max-height: 9.28571em;
       padding: 0.5em; /* 7px of 14px */
       .box-sizing;
       .border;

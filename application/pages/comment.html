@@ -5,28 +5,30 @@
             <option value="-date">Date</option>
             <option value="-rating">Rating</option>
         </select>
+        <h3>Rating: <span>{{newComment.rating}}</span></h3>
     </form>
     <h2>Comments</h2>
 </div>
 
-<ul class="commentsList">
-    <li ng-repeat="comment in comments | filter:query | orderBy:orderProp">
-        <strong class="title">Rating</strong>
-        <button type="button" class="increaseButton" ng-click="increaseRating(comment)">
-            +
-        </button>
-        {{comment.rating}}
-        <button type="button" class="decreaseBtn" ng-click="decreaseRating(comment)">
-            -
-        </button>
-
-        <div class="comment">{{comment.body}}</div>
-        <div class="info">
-            by <span class="username">{{comment.username}}</span> on <span class="date">{{comment.date | date:"MM/dd/yyyy"}}</span>
-            Coordinates: {{comment.coords[0].lat}} - {{comment.coords[0].lng}}
-        </div>
-    </li>
-</ul>
+<div class="commentsList">
+    <a href="#" class="all-comments">All Comments</a>
+    <ul class="commentsListInfo">
+        <li ng-repeat="comment in comments | filter:query | orderBy:orderProp">
+            <div class="rating">
+                <button type="button" class="increaseButton" ng-click="increaseRating(comment)">+</button>
+                <span class="info">{{comment.rating}}</span>
+                <button type="button" class="decreaseBtn" ng-click="decreaseRating(comment)">-</button>
+            </div>
+            <div class="textbox">
+                <p class="comment">{{comment.body}}</p>
+                <p class="info">
+                    <span class="username">{{comment.username}}</span> wrote on <span class="date">{{comment.date | date:"MM/dd/yyyy"}}</span>
+                    <!--Coordinates: {{comment.coords[0].lat}} - {{comment.coords[0].lng}}-->
+                </p>
+            </div>
+        </li>
+    </ul>
+</div>
 
 <div class="commentForm">
     <form name="newCommentForm" novalidate class="newComment" ng-submit="addComment()">
@@ -37,7 +39,6 @@
             <div class="item-area">
                 <label>Message: <textarea ng-model="newComment.body" class="commentArea" required></textarea></label>
             </div>
-            <!--<h3>Rating {{newComment.rating}}</h3>-->
         </div>
         <div class="btn-holder">
             <button type="submit" class="addCommentBtn" ng-disabled="newCommentForm.$invalid">Add comment</button>
