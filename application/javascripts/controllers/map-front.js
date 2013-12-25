@@ -8,20 +8,21 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                     longitude: $scope.map.longitude
                 };
                 CommentsMappedScaled.query({
-                    lat: Coordinates.getCoords().center.lat,
-                    lng: Coordinates.getCoords().center.lng,
-                    radius: Coordinates.getRadius()/*,
-                     limit: limit*/
-                }, function (data) {
-                    $scope.map.markers = convertToMarkers(data);
-                    $scope.cursor = {
-                        latitude: $scope.map.latitude,
-                        longitude: $scope.map.longitude,
-                        title: "Your",
-                        onClicked: onMarkerClicked};
-
-                    $scope.map.markers.push($scope.cursor);
-                });
+                        lat: Coordinates.getCoords().center.lat,
+                        lng: Coordinates.getCoords().center.lng,
+                        radius: Coordinates.getRadius()/*,
+                        limit: limit*/
+                    } , function (data) {
+                        $scope.map.markers = convertToMarkers(data);
+                        var cursorData = MapMarker.addIconSettings({
+                            latitude: $scope.map.latitude,
+                            longitude: $scope.map.longitude,
+                            title: "Your",
+                            onClicked: onMarkerClicked
+                        });
+                        $scope.cursor = cursorData;
+                        $scope.map.markers.push($scope.cursor);
+                    });
             }
 
             var onMarkerClicked = function () {
@@ -36,12 +37,13 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                 var i = data.length - 1;
                 while (i >= 0) {
                     var area = data[i];
-                    markersWithComments.push({
+                    var markerData = MapMarker.addIconSettings({
                         latitude: area.coords.lat,
                         longitude: area.coords.lng,
                         title: "Comments: " + area.blogs,
                         commentsCount: area.blogs,
                         onClicked: onMarkerClicked});
+                    markersWithComments.push(markerData);
                     i--;
                 }
                 return markersWithComments;
@@ -180,15 +182,14 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                                 map.setZoom(17);  // Why 17? Because it looks good.
 
                             }
-                            var marker = {
+                            var markerData = MapMarker.addIconSettings({
                                 latitude: place.geometry.location.nb,
                                 longitude: place.geometry.location.ob,
                                 showWindow: false,
                                 title: place.formatted_address
-                            };
+                            });
 
-
-                            scope.$emit('addMarker', marker);
+                            scope.$emit('addMarker', markerData);
 
                         } else {
                             console.log("Cannot find this place: " + place.name); //Todo: add message
@@ -213,4 +214,48 @@ DetailsPopUp.prototype.hide = function () {
     this.onClose();
 };
 
-
+var MapMarker = {
+    iconsData: [
+        {
+            borders: [0, 5],
+            size: {
+                w: 12,
+                h: 12
+            }
+        },
+        {
+            borders: [6, 9999],
+            size: {
+                w: 20,
+                h: 20
+            }
+        }
+    ],
+    iconPath: "../img/marker-blue.png",
+    addIconSettings: function(options) {
+        var count = options.commentsCount || 0;
+        var iconSettings = this.createIconSettings(count);
+        var settings = angular.extend(options, {
+            icon:iconSettings
+        });
+        return settings;
+    },
+    createIconSettings: function(count) {
+        var size, stopped = false, iconSettings = {};
+        angular.forEach(this.iconsData, function(value, key) {
+            if (!stopped) {
+                var borders = value.borders;
+                if (count >= borders[0] && count <= borders[1]) {
+                    size = value.size;
+                    stopped = true;
+                }
+            }
+        });
+        iconSettings.url = this.iconPath;
+        iconSettings.size = new google.maps.Size(size.w, size.h);
+        iconSettings.origin = new google.maps.Point(0, 0);
+        iconSettings.anchor = new google.maps.Point(size.w / 2, size.h / 2);
+        iconSettings.scaledSize = new google.maps.Size(size.w, size.h);
+        return iconSettings;
+    }
+};
