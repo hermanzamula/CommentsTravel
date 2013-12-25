@@ -33,29 +33,31 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                     latitude: 16,
                     longitude: 16,
                     markers: [],
-
                     events: {
                         click: function (mapModel, eventName, originalEventArgs) {
 //                            if ($scope.addNewPlace) {
-                                // 'this' is the directive's scope
-                                $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
-                                var e = originalEventArgs[0];
-                                $scope.cursor.latitude = e.latLng.lat();
-                                $scope.cursor.longitude = e.latLng.lng();
-                                Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
-                                $scope.markerDetails.hide();
-                                $scope.$apply();
+                            // 'this' is the directive's scope
+                            $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
+                            var e = originalEventArgs[0];
+                            $scope.cursor.latitude = e.latLng.lat();
+                            $scope.cursor.longitude = e.latLng.lng();
+                            Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
+                            $scope.markerDetails.hide();
+                            $scope.$apply();
 //                                $scope.addNewPlace = false;
 //                            }
                         },
                         'bounds_changed': function (mapModel, eventName, originalEventArgs) {
-
                             var center = mapModel.getCenter();
                             var northEast = mapModel.getBounds().getNorthEast();
                             var southWest = mapModel.getBounds().getSouthWest();
                             Coordinates.setCenter(center.lat(), center.lng());
                             Coordinates.setLeftCorner(northEast.lat(), northEast.lng());
                             Coordinates.setRightCorner(southWest.lat(), southWest.lng());
+
+                        },
+                        'zoom_changed': function() {
+                            updateMarkers();
                         }
                     }
                 }
@@ -76,21 +78,16 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
             });
             $scope.map.markers.push($scope.cursor);
             function updateMarkers() {
-                var leftCorner = {
-                    latitude: $scope.map.latitude,
-                    longitude: $scope.map.longitude
-                };
                 CommentsMappedScaled.query({
-                        lat: Coordinates.getCoords().center.lat,
-                        lng: Coordinates.getCoords().center.lng,
-                        radius: Coordinates.getRadius()/*,
-                        limit: limit*/
-                    } , function (data) {
-                        $scope.map.markers = convertToMarkers(data);
-                        $scope.map.markers.push($scope.cursor);
-                    });
+                    lat: Coordinates.getCoords().center.lat,
+                    lng: Coordinates.getCoords().center.lng,
+                    radius: Coordinates.getRadius()/*,
+                     limit: limit*/
+                }, function (data) {
+                    $scope.map.markers = convertToMarkers(data);
+                    $scope.map.markers.push($scope.cursor);
+                });
             }
-
 
 
             function convertToMarkers(data) {
@@ -238,17 +235,17 @@ var MapMarker = {
         }
     ],
     iconPath: "../img/marker-blue.png",
-    addIconSettings: function(options) {
+    addIconSettings: function (options) {
         var count = options.commentsCount || 0;
         var iconSettings = this.createIconSettings(count);
         var settings = angular.extend(options, {
-            icon:iconSettings
+            icon: iconSettings
         });
         return settings;
     },
-    createIconSettings: function(count) {
+    createIconSettings: function (count) {
         var size, stopped = false, iconSettings = {};
-        angular.forEach(this.iconsData, function(value, key) {
+        angular.forEach(this.iconsData, function (value, key) {
             if (!stopped) {
                 var borders = value.borders;
                 if (count >= borders[0] && count <= borders[1]) {
