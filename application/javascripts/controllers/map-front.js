@@ -8,20 +8,20 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                     longitude: $scope.map.longitude
                 };
                 CommentsMappedScaled.query({
-                        lat: Coordinates.getCoords().center.lat,
-                        lng: Coordinates.getCoords().center.lng,
-                        radius: Coordinates.getRadius()/*,
-                        limit: limit*/
-                    } , function (data) {
-                        $scope.map.markers = convertToMarkers(data);
-                        $scope.cursor = {
-                            latitude: $scope.map.latitude,
-                            longitude: $scope.map.longitude,
-                            title: "Your",
-                            onClicked: onMarkerClicked};
+                    lat: Coordinates.getCoords().center.lat,
+                    lng: Coordinates.getCoords().center.lng,
+                    radius: Coordinates.getRadius()/*,
+                     limit: limit*/
+                }, function (data) {
+                    $scope.map.markers = convertToMarkers(data);
+                    $scope.cursor = {
+                        latitude: $scope.map.latitude,
+                        longitude: $scope.map.longitude,
+                        title: "Your",
+                        onClicked: onMarkerClicked};
 
-                        $scope.map.markers.push($scope.cursor);
-                    });
+                    $scope.map.markers.push($scope.cursor);
+                });
             }
 
             var onMarkerClicked = function () {
@@ -50,6 +50,13 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
             // Enable the new Google Maps visuals until it gets enabled by default.
             // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
             google.maps.visualRefresh = true;
+
+            $scope.addNewPlace = false;
+            $scope.changeAddNewPlace = function () {
+                if (!$scope.addNewPlace) {
+                    $scope.addNewPlace = true;
+                }
+            };
 
             $scope.address = 'Kharkiv';
             $scope.language = 'en';
@@ -93,15 +100,18 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
 
                     events: {
                         click: function (mapModel, eventName, originalEventArgs) {
-                            // 'this' is the directive's scope
-                            $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
-                            var e = originalEventArgs[0];
-                            $scope.cursor.latitude = e.latLng.lat();
-                            $scope.cursor.longitude = e.latLng.lng();
-                            Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
-                            $scope.$apply();
+                            if ($scope.addNewPlace) {
+                                // 'this' is the directive's scope
+                                $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
+                                var e = originalEventArgs[0];
+                                $scope.cursor.latitude = e.latLng.lat();
+                                $scope.cursor.longitude = e.latLng.lng();
+                                Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
+                                $scope.$apply();
+                                $scope.addNewPlace = false;
+                            }
                         },
-                        'bounds_changed': function(mapModel, eventName, originalEventArgs) {
+                        'bounds_changed': function (mapModel, eventName, originalEventArgs) {
 
                             var center = mapModel.getCenter();
                             var northEast = mapModel.getBounds().getNorthEast();
