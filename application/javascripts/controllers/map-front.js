@@ -2,6 +2,79 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
     .controller("map-controller", ['$scope', '$rootScope', '$location', '$http', '$timeout', '$log', 'Location', 'Coordinates', 'CommentMapped', 'CommentsMappedScaled',
         function ($scope, $rootScope, $location, $http, $timeout, $log, Location, Coordinates, CommentMapped, CommentsMappedScaled) {
 
+            $scope.address = 'Kharkiv';
+            $scope.language = 'en';
+            $scope.markerDetails = new DetailsPopUp('#markerDetails', updateMarkers);
+
+            //get data from google
+            $scope.locationData = Location.getLocation({
+                address: $scope.address,
+                language: $scope.language
+            });
+
+            //set coords by default
+            $scope.location = {};
+            $scope.location.lat = 50;
+            $scope.location.lng = 30;
+//            $scope.addNewPlace = true;
+            angular.extend($scope, {
+                map: {
+                    center: {
+                        latitude: $scope.location.lat,
+                        longitude: $scope.location.lng
+                    },
+                    zoom: 5,
+                    dragging: false,
+                    bounds: {},
+                    options: {
+                        streetViewControl: false,
+                        panControl: false
+                    },
+                    latitude: 16,
+                    longitude: 16,
+                    markers: [],
+
+                    events: {
+                        click: function (mapModel, eventName, originalEventArgs) {
+//                            if ($scope.addNewPlace) {
+                                // 'this' is the directive's scope
+                                $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
+                                var e = originalEventArgs[0];
+                                $scope.cursor.latitude = e.latLng.lat();
+                                $scope.cursor.longitude = e.latLng.lng();
+                                Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
+                                $scope.markerDetails.hide();
+                                $scope.$apply();
+//                                $scope.addNewPlace = false;
+//                            }
+                        },
+                        'bounds_changed': function (mapModel, eventName, originalEventArgs) {
+
+                            var center = mapModel.getCenter();
+                            var northEast = mapModel.getBounds().getNorthEast();
+                            var southWest = mapModel.getBounds().getSouthWest();
+                            Coordinates.setCenter(center.lat(), center.lng());
+                            Coordinates.setLeftCorner(northEast.lat(), northEast.lng());
+                            Coordinates.setRightCorner(southWest.lat(), southWest.lng());
+                        }
+                    }
+                }
+            });
+
+            var onMarkerClicked = function () {
+                $location.path("/comment/" + this.latitude + "/" + this.longitude);
+                Coordinates.setCoords(this.latitude, this.longitude);
+                $scope.markerDetails.show();
+                $scope.markerDetails.commentsCount = this.commentsCount;
+            };
+
+            $scope.cursor = MapMarker.addIconSettings({
+                latitude: $scope.map.latitude,
+                longitude: $scope.map.longitude,
+                title: "Your",
+                onClicked: onMarkerClicked
+            });
+            $scope.map.markers.push($scope.cursor);
             function updateMarkers() {
                 var leftCorner = {
                     latitude: $scope.map.latitude,
@@ -14,23 +87,11 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                         limit: limit*/
                     } , function (data) {
                         $scope.map.markers = convertToMarkers(data);
-                        var cursorData = MapMarker.addIconSettings({
-                            latitude: $scope.map.latitude,
-                            longitude: $scope.map.longitude,
-                            title: "Your",
-                            onClicked: onMarkerClicked
-                        });
-                        $scope.cursor = cursorData;
                         $scope.map.markers.push($scope.cursor);
                     });
             }
 
-            var onMarkerClicked = function () {
-                $location.path("/comment/" + this.latitude + "/" + this.longitude);
-                Coordinates.setCoords(this.latitude, this.longitude);
-                $scope.markerDetails.show();
-                $scope.markerDetails.commentsCount = this.commentsCount;
-            };
+
 
             function convertToMarkers(data) {
                 var markersWithComments = [];
@@ -53,27 +114,13 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
             // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
             google.maps.visualRefresh = true;
 
-            $scope.addNewPlace = false;
-            $scope.changeAddNewPlace = function () {
-                if (!$scope.addNewPlace) {
-                    $scope.addNewPlace = true;
-                }
-            };
+//            $scope.addNewPlace = false;
+//            $scope.changeAddNewPlace = function () {
+//                if (!$scope.addNewPlace) {
+//                    $scope.addNewPlace = true;
+//                }
+//            };
 
-            $scope.address = 'Kharkiv';
-            $scope.language = 'en';
-
-
-            //get data from google
-            $scope.locationData = Location.getLocation({
-                address: $scope.address,
-                language: $scope.language
-            });
-
-            //set coords by default
-            $scope.location = {};
-            $scope.location.lat = 50;
-            $scope.location.lng = 30;
 
             $scope.$watch("locationData", function (oldVal, newVal) {
                 //set coords using google API
@@ -83,53 +130,12 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                     $scope.position.coords.longitude = $scope.location.lng;
                 }
             });
-            angular.extend($scope, {
-                map: {
-                    center: {
-                        latitude: $scope.location.lat,
-                        longitude: $scope.location.lng
-                    },
-                    zoom: 5,
-                    dragging: false,
-                    bounds: {},
-                    options: {
-                        streetViewControl: false,
-                        panControl: false
-                    },
-                    latitude: 16,
-                    longitude: 16,
-                    markers: [],
 
-                    events: {
-                        click: function (mapModel, eventName, originalEventArgs) {
-                            if ($scope.addNewPlace) {
-                                // 'this' is the directive's scope
-                                $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
-                                var e = originalEventArgs[0];
-                                $scope.cursor.latitude = e.latLng.lat();
-                                $scope.cursor.longitude = e.latLng.lng();
-                                Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
-                                $scope.$apply();
-                                $scope.addNewPlace = false;
-                            }
-                        },
-                        'bounds_changed': function (mapModel, eventName, originalEventArgs) {
-
-                            var center = mapModel.getCenter();
-                            var northEast = mapModel.getBounds().getNorthEast();
-                            var southWest = mapModel.getBounds().getSouthWest();
-                            Coordinates.setCenter(center.lat(), center.lng());
-                            Coordinates.setLeftCorner(northEast.lat(), northEast.lng());
-                            Coordinates.setRightCorner(southWest.lat(), southWest.lng());
-                        }
-                    }
-                }
-            });
 
             Coordinates.setCenter($scope.map.center.latitude, $scope.map.center.longitude);
             Coordinates.setLeftCorner($scope.map.latitude, $scope.map.longitude);
 
-            $scope.markerDetails = new DetailsPopUp('#markerDetails', updateMarkers);
+
             updateMarkers();
 
 
