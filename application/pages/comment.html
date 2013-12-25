@@ -5,7 +5,7 @@
             <option value="-date">Date</option>
             <option value="-rating">Rating</option>
         </select>
-        <h3>Rating: <span>{{newComment.rating}}</span></h3>
+        <!--<h3>Rating: <span>{{newComment.rating}}</span></h3>-->
     </form>
     <h2>Comments</h2>
 </div>
@@ -23,7 +23,6 @@
                 <p class="comment">{{comment.body}}</p>
                 <p class="info">
                     <span class="username">{{comment.username}}</span> wrote on <span class="date">{{comment.date | date:"MM/dd/yyyy"}}</span>
-                    <!--Coordinates: {{comment.coords[0].lat}} - {{comment.coords[0].lng}}-->
                 </p>
             </div>
         </li>
