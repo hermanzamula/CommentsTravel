@@ -139,6 +139,7 @@ a:hover {
   background: rgba(255, 255, 255, 0.9);
   z-index: 640;
   .box-sizing;
+  .border-radius(5px 5px 0 0);
 
   .searchBar {
     width: 100%;
@@ -292,24 +293,24 @@ a:hover {
     }
   }
   .close {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.9);
     cursor: pointer;
-    height: 1.14285em;
-    .position (absolute, -1.14285em, 50%); /* 7px and 10px of 14px */
-    .border-radius (3px 3px 0 0);
-    width: 2em;
-    margin-right: -1em;
+    height: 1.5em;
+    .position (absolute, -1.5em, 50%); /* 7px and 10px of 14px */
+    .border-radius (5px 5px 0 0);
+    width: 2.5em;
+    margin-right: -1.25em;
   }
   .close span {
     display: block;
-    margin: 0.28571em auto 0;
-    background: url("../img/sprite.png") no-repeat -1px -9px;
-    height: 8px;
-    width: 11px;
+    margin: 0.35714em auto 0;
+    background: url("../img/sprite.png") no-repeat 0 -10px;
+    height: 11px;
+    width: 15px;
     text-indent: -9999px;
   }
   .close span.opened {
-    background-position: -1px 0;
+    background-position: 0 0;
   }
 }
 #markerDetails.no-comments {
