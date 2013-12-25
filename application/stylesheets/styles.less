@@ -148,6 +148,8 @@ a {
     }
   }
   .commentsList {
+    float: left;
+    width: 48%;
     margin-bottom: 1em;
 
     button{
@@ -158,11 +160,16 @@ a {
     }
   }
   .commentForm {
+    float: right;
+    width: 48%;
     .row {
       margin-bottom: 0.5em; /* 7px of 14px*/
+      .item-name,
+      .item-area {
+        width: 100%;
+      }
       .item-name {
-        float: left;
-        width: 37%;
+        margin-bottom: 1em;
       }
       .username {
         width: 100%;
@@ -234,17 +241,13 @@ a {
 #markerDetails.no-comments {
   width: 60%;
   .position (fixed, auto, auto, 0, 20%);
+
+  .commentsList {
+    display: none;
+  }
   .commentForm {
-    .row {
-      .item-name,
-      .item-area {
-        float: none;
-        width: 100%;
-      }
-      .item-name {
-        margin-bottom: 1em;
-      }
-    }
+    float: none;
+    width: 100%;
   }
 }
 @media only screen
