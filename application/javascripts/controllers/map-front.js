@@ -2,27 +2,16 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment',
     .controller("map-controller", ['$scope', '$rootScope', '$location', '$http', '$timeout', '$log', 'Location', 'Coordinates', 'CommentMapped', 'CommentsMappedScaled', 'Markers',
         function ($scope, $rootScope, $location, $http, $timeout, $log, Location, Coordinates, CommentMapped, CommentsMappedScaled, Markers) {
 
-            $scope.address = 'Kharkiv';
-            $scope.language = 'en';
             $scope.markerDetails = new DetailsPopUp('#markerDetails', updateMarkers);
 
-            //get data from google
-            $scope.locationData = Location.getLocation({
-                address: $scope.address,
-                language: $scope.language
-            });
-
-            //set coords by default
-            $scope.location = {};
-            $scope.location.lat = 50;
-            $scope.location.lng = 30;
+            var center = {
+                latitude: 50,
+                longitude: 30
+            };
 //            $scope.addNewPlace = true;
             angular.extend($scope, {
                 map: {
-                    center: {
-                        latitude: $scope.location.lat,
-                        longitude: $scope.location.lng
-                    },
+                    center: center,
                     zoom: 5,
                     dragging: false,
                     bounds: {},
@@ -110,37 +99,25 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment',
             // See http://googlegeodevelopers.blogspot.ca/2013/05/a-fresh-new-look-for-maps-api-for-all.html
             google.maps.visualRefresh = true;
 
-//            $scope.addNewPlace = false;
-//            $scope.changeAddNewPlace = function () {
-//                if (!$scope.addNewPlace) {
-//                    $scope.addNewPlace = true;
-//                }
-//            };
-
-
-            $scope.$watch("locationData", function (oldVal, newVal) {
-                //set coords using google API
-                if ($scope.locationData.results) {
-                    $scope.location = $scope.locationData.results[0].geometry.location;
-                    $scope.position.coords.latitude = $scope.location.lat;
-                    $scope.position.coords.longitude = $scope.location.lng;
-                }
-            });
-
-
             Coordinates.setCenter($scope.map.center.latitude, $scope.map.center.longitude);
             Coordinates.setLeftCorner($scope.map.latitude, $scope.map.longitude);
 
 
             updateMarkers();
 
+            //get data from google maps
+            function getLocation (address, language) {
+                return Location.getLocation({
+                    address: address,
+                    language: language
+                });
+            }
 
-            var addMarker = function (markerData) {
+            function addMarker (markerData) {
                 if (markerData) {
                     Markers.addMarkers(markerData, onMarkerClicked);
                 }
-
-            };
+            }
 
             $rootScope.$on('addMarker', function (event, marker) {
                 addMarker(marker);
