@@ -1,6 +1,6 @@
-angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment'])
-    .controller("map-controller", ['$scope', '$rootScope', '$location', '$http', '$timeout', '$log', 'Location', 'Coordinates', 'CommentMapped', 'CommentsMappedScaled',
-        function ($scope, $rootScope, $location, $http, $timeout, $log, Location, Coordinates, CommentMapped, CommentsMappedScaled) {
+angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment', 'markers-list'])
+    .controller("map-controller", ['$scope', '$rootScope', '$location', '$http', '$timeout', '$log', 'Location', 'Coordinates', 'CommentMapped', 'CommentsMappedScaled', 'Markers',
+        function ($scope, $rootScope, $location, $http, $timeout, $log, Location, Coordinates, CommentMapped, CommentsMappedScaled, Markers) {
 
             $scope.address = 'Kharkiv';
             $scope.language = 'en';
@@ -32,16 +32,22 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                     },
                     latitude: 16,
                     longitude: 16,
-                    markers: [],
+                    markers: Markers.getMarkers(),
                     events: {
                         click: function (mapModel, eventName, originalEventArgs) {
 //                            if ($scope.addNewPlace) {
                             // 'this' is the directive's scope
                             $log.log("user defined event: " + eventName, mapModel, originalEventArgs);
                             var e = originalEventArgs[0];
-                            $scope.cursor.latitude = e.latLng.lat();
-                            $scope.cursor.longitude = e.latLng.lng();
-                            Coordinates.setCoords(e.latLng.lat(), e.latLng.lng());
+
+
+                            //Markers.deleteLastMarkers(1); //Todo: it can delete last marker
+                            Markers.addMarkers({
+                                latitude: e.latLng.lat(),
+                                longitude: e.latLng.lng(),
+                                title: 'My place'
+                            }, onMarkerClicked);
+
                             $scope.markerDetails.hide();
                             $scope.$apply();
 //                                $scope.addNewPlace = false;
@@ -70,13 +76,6 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                 $scope.markerDetails.commentsCount = this.commentsCount;
             };
 
-            $scope.cursor = MapMarker.addIconSettings({
-                latitude: $scope.map.latitude,
-                longitude: $scope.map.longitude,
-                title: "Your",
-                onClicked: onMarkerClicked
-            });
-            $scope.map.markers.push($scope.cursor);
             function updateMarkers() {
                 CommentsMappedScaled.query({
                     lat: Coordinates.getCoords().center.lat,
@@ -84,8 +83,7 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                     radius: Coordinates.getRadius()/*,
                      limit: limit*/
                 }, function (data) {
-                    $scope.map.markers = convertToMarkers(data);
-                    $scope.map.markers.push($scope.cursor);
+                    Markers.addMarkers(convertToMarkers(data), onMarkerClicked);
                 });
             }
 
@@ -95,12 +93,13 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                 var i = data.length - 1;
                 while (i >= 0) {
                     var area = data[i];
-                    var markerData = MapMarker.addIconSettings({
+                    var markerData = {
                         latitude: area.coords.lat,
                         longitude: area.coords.lng,
                         title: "Comments: " + area.blogs,
                         commentsCount: area.blogs,
-                        onClicked: onMarkerClicked});
+                        onClick: onMarkerClicked
+                    };
                     markersWithComments.push(markerData);
                     i--;
                 }
@@ -136,12 +135,9 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
             updateMarkers();
 
 
-            var addMarker = function (marker) {
-                if (marker && marker.latitude && marker.longitude && marker.title) {
-                    if (!marker.onClicked) {
-                        marker.onClicked = onMarkerClicked;  //Todo: find a better way to add onClick event
-                    }
-                    $scope.map.markers.push(marker);
+            var addMarker = function (markerData) {
+                if (markerData) {
+                    Markers.addMarkers(markerData, onMarkerClicked);
                 }
 
             };
@@ -185,13 +181,12 @@ angular.module("map-front", ['map-back', 'comments-back', 'coordsForNewComment']
                                 map.setZoom(17);  // Why 17? Because it looks good.
 
                             }
-                            var markerData = MapMarker.addIconSettings({
+                            var markerData = {
                                 latitude: place.geometry.location.nb,
                                 longitude: place.geometry.location.ob,
                                 showWindow: false,
                                 title: place.formatted_address
-                            });
-
+                            };
                             scope.$emit('addMarker', markerData);
 
                         } else {
@@ -215,50 +210,4 @@ DetailsPopUp.prototype.show = function () {
 DetailsPopUp.prototype.hide = function () {
     $(this.selector).hide();
     this.onClose();
-};
-
-var MapMarker = {
-    iconsData: [
-        {
-            borders: [0, 5],
-            size: {
-                w: 12,
-                h: 12
-            }
-        },
-        {
-            borders: [6, 9999],
-            size: {
-                w: 20,
-                h: 20
-            }
-        }
-    ],
-    iconPath: "../img/marker-blue.png",
-    addIconSettings: function (options) {
-        var count = options.commentsCount || 0;
-        var iconSettings = this.createIconSettings(count);
-        var settings = angular.extend(options, {
-            icon: iconSettings
-        });
-        return settings;
-    },
-    createIconSettings: function (count) {
-        var size, stopped = false, iconSettings = {};
-        angular.forEach(this.iconsData, function (value, key) {
-            if (!stopped) {
-                var borders = value.borders;
-                if (count >= borders[0] && count <= borders[1]) {
-                    size = value.size;
-                    stopped = true;
-                }
-            }
-        });
-        iconSettings.url = this.iconPath;
-        iconSettings.size = new google.maps.Size(size.w, size.h);
-        iconSettings.origin = new google.maps.Point(0, 0);
-        iconSettings.anchor = new google.maps.Point(size.w / 2, size.h / 2);
-        iconSettings.scaledSize = new google.maps.Size(size.w, size.h);
-        return iconSettings;
-    }
 };

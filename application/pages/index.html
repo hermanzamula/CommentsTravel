@@ -43,7 +43,7 @@
          longitude="map.longitude"
             >
         <autocomplete></autocomplete>
-        <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="m.onClicked()">
+        <marker ng-repeat="m in map.markers" coords="m" icon="m.icon" click="m.onClick()">
             <marker-label content="m.title" anchor="22 0" class="marker-labels"/>
         </marker>
 
